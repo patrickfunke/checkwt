@@ -1,5 +1,6 @@
 export default function PrettyPrint({ data }: { data: any }) {
-    const PrettyPrint = ({ data }: { data: Object }) => {
+
+    const PrettyPrint = ({ data }: { data: string }) => {
         const syntaxHighlight = (json: string) => {
             if (typeof json !== 'string' || json === null || json === 'object') {
                 json = JSON.stringify(json, null, 2);
@@ -27,10 +28,12 @@ export default function PrettyPrint({ data }: { data: any }) {
 
         return (
             <pre
-                className="json-pre"
-                dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(data, null, 2)) }}
+                className="json-pre font-mono"
+                dangerouslySetInnerHTML={{ __html: syntaxHighlight(data) }}
             />
         );
     };
+
+
     return <PrettyPrint data={data} />;
 };
