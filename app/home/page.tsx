@@ -77,7 +77,7 @@ export default function Home() {
     }, [token])
 
     return (
-        <div className="w-full h-screen p-4 md:p-10 space-y-6 dark:bg-[#111111] dark:text-white">
+        <div className="w-full h-screen p-4 md:p-10 space-y-6">
             <ThemeSwitcher/>
             <div className="flex items-center mx-auto w-fit gap-4">
                 <img src="/favicon.ico" alt="favicon.ico"  className="w-10 rounded-xl"/>
@@ -104,11 +104,15 @@ export default function Home() {
                             }
                         </div>
                         <div className="flex gap-2">
-                            <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
+                            <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
+                            </Button>
                             <Button className="" title="Clear" onClick={() => {
                                 clearState();
                                 setValue("");
-                            }}><img className="w-4 h-4 cursor-pointer " src="/clear.png" alt="Clear" /></Button>
+                            }}>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.1094 3.3359L1 8L4.1094 12.6641C4.6658 13.4987 5.60249 14 6.60555 14H15V2H6.60555C5.60249 2 4.6658 2.5013 4.1094 3.3359Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M7 6L11 10M11 6L7 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </Button>
                         </div>
                     </div>
                     <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
@@ -118,8 +122,9 @@ export default function Home() {
                 <div>
                     <div className="text-xl font-bold flex justify-between items-center">
                         <div>Decoded Header</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
-                    </div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
+                        </Button>                    </div>
                     <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={header} />
                     </div>
@@ -128,8 +133,9 @@ export default function Home() {
                 <div className="col-start-2">
                     <div className="text-xl font-bold flex justify-between items-center">
                         <div>Decoded Payload</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
-                    </div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
+                        </Button>                    </div>
                     <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={payload} />
                     </div>
@@ -138,8 +144,9 @@ export default function Home() {
                 <div className="col-start-2">
                     <div className="text-xl font-bold flex justify-between items-center">
                         <div>Used Keys</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
-                    </div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
+                        </Button>                    </div>
                     <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={usedKey} />
                     </div>
