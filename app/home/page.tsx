@@ -1,3 +1,5 @@
+import PrettyPrint from "@/app/components/prettyPrint";
+
 export default function Home() {
     return (
         <div className="w-full h-full p-4 md:p-20 space-y-6">
@@ -12,25 +14,21 @@ export default function Home() {
                     <div className="">
                         <div className="text-xl font-bold">Decoded Header</div>
                         <div className="bg-gray-50 rounded-lg border border-gray-300 h-64 p-4">
-                            {
-                                '{\n' +
-                                '                                "alg": "HS256",\n' +
-                                '                                "typ": "JWT"\n' +
-                                '                            }'
-                            }
+                            <PrettyPrint data={{
+                                "alg": "HS256",
+                                "typ": "JWT"
+                            }}/>
                         </div>
                     </div>
                     <div className="">
                         <div className="text-xl font-bold">Decoded Payload</div>
                         <div className="bg-gray-50 rounded-lg border border-gray-300 h-64 p-4">
-                            {
-                                '{\n' +
-                                '  "sub": "1234567890",\n' +
-                                '  "name": "John Doe",\n' +
-                                '  "admin": true,\n' +
-                                '  "iat": 1516239022\n' +
-                                '}'
-                            }
+                            <PrettyPrint data={{
+                                "sub": "1234567890",
+                                "name": "John Doe",
+                                "admin": true,
+                                "iat": 1516239022
+                            }}/>
                         </div>
                     </div>
                 </div>
