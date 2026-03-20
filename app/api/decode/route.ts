@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
             {
                 header: decoded.header,
                 payload: decoded.payload,
-                signatureValid: decoded.signatureCheck.verified,
+                signatureValid: decoded.signatureCheck,
                 usedKey: getKeyById(decoded.header.kid)
             },
             { status: 200 }

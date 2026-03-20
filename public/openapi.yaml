@@ -53,6 +53,27 @@ paths:
         404:
           description: Signing key not found
 
+  /encode:
+    post:
+      summary: Encode (create) JWT
+      tags:
+        - Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncodeRequest'
+      responses:
+        200:
+          description: Token created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncodeResponse'
+        400:
+          description: Bad request - invalid input
+
 components:
   schemas:
     JWTRequest:
@@ -84,3 +105,24 @@ components:
       properties:
         key:
           type: object
+    EncodeRequest:
+      type: object
+      required:
+        - header
+        - payload
+      properties:
+        header:
+          type: object
+        payload:
+          type: object
+        signingKey:
+          type: object
+        encryptionKey:
+          type: object
+    EncodeResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
