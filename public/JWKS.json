@@ -32,6 +32,14 @@
       "kid": "encode-test-key",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "8ieUfWv8gv8GIJVoYiswSke7d_Su0RecZcqVWU_-CPU",
+      "kty": "OKP",
+      "kid": "b93a2ebc-7c1f-4ccc-905e-003d3dbb82de",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }

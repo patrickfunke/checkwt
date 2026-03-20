@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PrettyPrint from "@/app/components/prettyPrint";
 import JwtTextarea from "@/app/components/JWTTextarea.tsx";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ export default function Home() {
     const [payload, setPayload] = useState("");
     const [usedKey, setUsedKey] = useState("");
     const [signatureValid, setSignatureValid] = useState(null);
+    const [signatureInvalidReason, setSignatureInvalidReason] = useState(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [value, setValue] = useState<string>("");
 
@@ -30,6 +31,7 @@ export default function Home() {
         setPayload("");
         setUsedKey("");
         setSignatureValid(null);
+        setSignatureInvalidReason(null);
     }
 
     const setError = (error: string) => {
@@ -58,9 +60,11 @@ export default function Home() {
             }
             setErrorMessage(null);
             const { header, payload, signatureValid, usedKey } = await res.json();
+            const { verified, reason } = await signatureValid;
             setHeader(header ?? "");
             setPayload(payload ?? "");
-            setSignatureValid(signatureValid ?? "");
+            setSignatureValid(verified);
+            setSignatureInvalidReason(reason);
             setUsedKey(usedKey ?? "");
         } catch (err) {
             setError("Failed to parse token.");
@@ -92,7 +96,14 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <div className="text-xl font-bold flex justify-between items-center">
-                        <div>JSON Web Token</div>
+                        <div className="flex gap-2">
+                            <div>JSON Web Token</div>
+                            {signatureValid !== null && <div className={(signatureValid === true ? "text-green-500" : "text-red-500") + " flex flex-row items-center gap-2 text-sm"}>
+                                {signatureValid === true ? <img className="w-2 h-2 inline" src="/correct.png" alt="Valid" /> : <img className="w-2 h-2 inline" src="/wrong.png" alt="Invalid" />}
+                                {signatureValid === true ? "Signature is valid" : `Signature is invalid: ${signatureInvalidReason ?? ''}`}
+                            </div>
+                            }
+                        </div>
                         <div className="flex gap-2">
                             <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
                             <Button className="" title="Clear" onClick={() => {
@@ -102,10 +113,6 @@ export default function Home() {
                         </div>
                     </div>
                     <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
-                    <div className={(signatureValid === true ? "text-green-500" : "text-red-500") + " flex flex-row items-center gap-2"}>
-                        {signatureValid === true ? <img className="w-4 h-4 inline" src="/correct.png" alt="Valid" /> : <img className="w-4 h-4 inline" src="/wrong.png" alt="Invalid" />}
-                        {signatureValid === true ? "Signature is valid" : "Signature is invalid"}
-                    </div>
                 </div>
 
 
