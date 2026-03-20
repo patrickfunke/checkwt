@@ -128,3 +128,9 @@
     @apply font-sans;
   }
 }
+
+.key { color: #e06c75; font-weight: bold; }   /* Red-ish */
+.string { color: #98c379; }                  /* Green */
+.number { color: #d19a66; }                  /* Orange */
+.boolean { color: #61afef; }                 /* Blue */
+.null { color: #56b6c2; }                    /* Cyan */
