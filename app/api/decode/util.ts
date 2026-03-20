@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { importJWK, jwtVerify } from 'jose';
+import { importJWK, jwtVerify, compactDecrypt, decodeProtectedHeader } from 'jose';
 
 /* First step: JWT decode */
 function parseToken(token: string) {
@@ -64,10 +64,66 @@ function checkSignature(token: string) {
     })();
 }
 
-/* Third step: decrypt JWE*/
-function decryptToken(payload: string) {
-    // Placeholder: JWE decryption not implemented in this helper
-    return null;
+/* Third step: decrypt JWE */
+export async function decryptToken(token: string, options?: {
+    jwksPath?: string;
+    privateKey?: Record<string, unknown>;
+}): Promise<{ plaintext: string; header: Record<string, unknown> } | { error: string }> {
+    try {
+
+        // Decode the protected header to find the matching key
+        const protectedHeader = decodeProtectedHeader(token);
+
+        // Resolve the decryption key
+        const privateKey = await resolveDecryptionKey(protectedHeader, options);
+        if (!privateKey) {
+            return { error: 'No matching private key found for decryption' };
+        }
+
+        // Decrypt
+        const { plaintext } = await compactDecrypt(token, privateKey);
+        const decoded = new TextDecoder().decode(plaintext);
+
+        return {
+            plaintext: decoded,
+            header: protectedHeader as Record<string, unknown>,
+        };
+    } catch (e) {
+        return { error: String(e) };
+    }
+}
+
+async function resolveDecryptionKey(
+    header: Record<string, unknown>,
+    options?: { jwksPath?: string; privateKey?: Record<string, unknown> }
+) {
+    // Option 1: Directly provided key
+    if (options?.privateKey) {
+        const alg = (header.alg as string) || 'RSA-OAEP-256';
+        return await importJWK(options.privateKey, alg);
+    }
+
+    // Option 2: Load from JWKS file (private keys!)
+    const jwksPath = options?.jwksPath
+        ?? path.resolve(process.cwd(), 'private', 'JWKS.json');
+
+    if (!fs.existsSync(jwksPath)) {
+        return null;
+    }
+
+    const jwks = JSON.parse(fs.readFileSync(jwksPath, 'utf8'));
+    const keys: any[] = jwks.keys || [];
+
+    // Match by kid, or fall back to first key with correct use
+    const key = keys.find((k) =>
+        (header.kid ? k.kid === header.kid : true) &&
+        (k.use === 'enc' || !k.use)
+    );
+
+    if (!key) return null;
+
+    const alg = (header.alg as string) || key.alg || 'RSA-OAEP-256';
+    return await importJWK(key, alg);
 }
 
 /* Fourth step: Educate Users */
