@@ -24,12 +24,12 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
     }
 
     return (
-        <div className="w-full max-w-3xl">
+        <div className="w-full">
             <div className="relative min-h-35">
                 <pre
                     ref={highlightRef}
                     aria-hidden="true"
-                    className="pointer-events-none min-h-35 overflow-auto rounded-xl p-4 text-lg font-mono leading-6 whitespace-pre-wrap wrap-break-word"
+                    className="pointer-events-none min-h-35 overflow-auto rounded-xl p-4 font-mono leading-6 whitespace-pre-wrap wrap-break-word"
                 >
                   {highlightJwt(value ? value : "")}
                 </pre>
@@ -41,7 +41,7 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent text-lg leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
                 />
             </div>
         </div>
