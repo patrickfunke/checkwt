@@ -9,6 +9,7 @@ export default function Home() {
     const [token, setToken] = useState("");
     const [header, setHeader] = useState("");
     const [payload, setPayload] = useState("");
+    const [usedKey, setUsedKey] = useState("");
     const [signatureValid, setSignatureValid] = useState(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [value, setValue] = useState<string>("");
@@ -23,13 +24,22 @@ export default function Home() {
         }
     };
 
+    const clearState = () => {
+        setErrorMessage(null);
+        setHeader("");
+        setPayload("");
+        setUsedKey("");
+        setSignatureValid(null);
+    }
+
+    const setError = (error: string) => {
+        clearState();
+        setErrorMessage(error);
+    }
 
     const handleDecode = async () => {
-        setErrorMessage(null);
         if (!token) {
-            setHeader("");
-            setPayload("");
-            setSignatureValid(null);
+            clearState();
             return;
         }
 
@@ -43,19 +53,17 @@ export default function Home() {
             });
             if (!res.ok) {
                 const { error } = await res.json();
-                setErrorMessage(error);
-                setHeader("");
-                setPayload("");
-                setSignatureValid(null);
+                setError(error);
                 return;
             }
             setErrorMessage(null);
-            const { header, payload, signatureValid } = await res.json();
-            setHeader(header);
-            setPayload(payload);
-            setSignatureValid(signatureValid);
+            const { header, payload, signatureValid, usedKey } = await res.json();
+            setHeader(header ?? "");
+            setPayload(payload ?? "");
+            setSignatureValid(signatureValid ?? "");
+            setUsedKey(usedKey ?? "");
         } catch (err) {
-            console.error("Error decoding token:", err);
+            setError("Failed to parse token.");
         }
     };
 
@@ -78,49 +86,50 @@ export default function Home() {
                 </div>
                 <div className="text-red-500">{errorMessage ?? ''}</div>
             </div>
-            <div className="flex md:flex-row flex-col gap-4">
-                <div className="flex flex-col gap-4 w-full">
-                    <div className="w-full">
-                    <div className="text-xl font-bold w-full flex justify-between items-center">
-                        JSON Web Token
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <div className="text-xl font-bold flex justify-between items-center">
+                        <div>JSON Web Token</div>
                         <div className="flex gap-2">
-                            <Button className="" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy to Clipboard" /></Button>
-                            <Button className="" onClick={() => {
-                                setToken("");
+                            <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
+                            <Button className="" title="Clear" onClick={() => {
+                                clearState();
                                 setValue("");
                             }}><img className="w-4 h-4 cursor-pointer " src="/clear.png" alt="Clear" /></Button>
                         </div>
                     </div>
                     <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
                 </div>
+
+
+                <div>
+                    <div className="text-xl font-bold flex justify-between items-center">
+                        <div>Decoded Header</div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] h-48 p-4">
+                        <PrettyPrint data={header} />
+                    </div>
                 </div>
 
-
-                <div className="flex flex-col gap-4 w-full h-full">
-                    <div>
-                        <div className="text-xl font-bold">Decoded Header</div>
-                        <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] h-48 p-4">
-                            <PrettyPrint data={header} />
-                        </div>
+                <div className="col-start-2">
+                    <div className="text-xl font-bold flex justify-between items-center">
+                        <div>Decoded Payload</div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
                     </div>
-
-                    <div>
-                        <div className="text-xl font-bold">Decoded Payload</div>
-                        <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] h-48 p-4">
-                            <PrettyPrint data={payload} />
-                        </div>
+                    <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] h-48 p-4">
+                        <PrettyPrint data={payload} />
                     </div>
+                </div>
 
-                    <div>
-                        <div className="text-xl font-bold">Used keys</div>
-                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-48 p-4">
-
-                            <PrettyPrint data={{"keys": [{"kid":"dsaj", "alg":"HS256"}]}} />
-
-                        </div>
+                <div className="col-start-2">
+                    <div className="text-xl font-bold flex justify-between items-center">
+                        <div>Used Keys</div>
+                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy" /></Button>
                     </div>
-
-
+                    <div className="bg-gray-50 dark:bg-[#111111] rounded-lg border border-gray-300 dark:border-[#1e1e1e] h-48 p-4">
+                        <PrettyPrint data={usedKey} />
+                    </div>
                 </div>
             </div>
         </div>
