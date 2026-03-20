@@ -1,0 +1,22 @@
+# Kurz: Repo-Check-Anleitung für Agents
+
+Kurze, prägnante Schritte, damit ein Agent dieses Projekt schnell prüfen kann.
+
+- Zweck: Schnellüberblick, Build- und Sicherheits-Checks, kleine Fix-Vorschläge.
+- Vor dem Start: `npm install` und `node -v` prüfen (Node 16+ empfohlen, siehe `package.json`).
+- Wichtige Orte:
+  - `app/api/decode/` — API-Route und Hilfsfunktionen
+  - `app/` — Seiten und Layout
+  - `public/JWKS.json`, `public/public_keys.json`, `public/sample_tokens.json` — JWT/Keys
+  - `openapi.yaml`, `package.json`, `README.md`
+- Checkliste (kurz):
+  1. TypeScript- und ESLint-Fehler (`npm run build` / `npm run lint`).
+  2. API-Route `app/api/decode/route.ts` ausführen/lesen; Auf sichere Key-Verwendung prüfen.
+  3. Prüfen, ob sensible Daten in Repo sind (keine private Keys/secrets committed).
+  4. OpenAPI-Schema validieren (`openapi.yaml`).
+  5. Unit-/Integrationstests laufen lassen (falls vorhanden).
+- Reporting: Ergebnisse als Issue/PR-Checklist oder kurzen Kommentar zusammenfassen. Für jedes Problem:
+  - kurze Beschreibung, betroffene Datei(en), reproduzierende Schritte, minimaler Fix-Vorschlag.
+- Beschränkungen: Keine Änderungen an Secrets oder produktiven Schlüsseldateien; Änderungen klein und rückwärtskompatibel halten.
+
+Wenn weitere Details benötigt werden, kurz nachfragen (z. B. Node-Version, Testbefehle).
