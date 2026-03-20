@@ -3,17 +3,18 @@ import React, { useRef, useState } from "react";
 type JwtTextareaProps = {
     onChange?: (value: string) => void;
     errorMessage?: string | null;
+    value: string | null;
+    onValueChange?: (value: string) => void;
 };
 
-export default function JwtTextarea({ onChange, errorMessage }: JwtTextareaProps) {
-    const [value, setValue] = useState<string>("");
+export default function JwtTextarea({ onChange, errorMessage, value, onValueChange }: JwtTextareaProps) {
     const highlightRef = useRef<HTMLPreElement | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;
 
-        setValue(newValue);          // update internal state
-        onChange?.(newValue);        // notify parent
+        onValueChange?.(newValue);
+        onChange?.(newValue);
     };
 
     const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
@@ -30,12 +31,12 @@ export default function JwtTextarea({ onChange, errorMessage }: JwtTextareaProps
                     aria-hidden="true"
                     className="pointer-events-none min-h-35 overflow-auto rounded-xl p-4 text-lg font-mono leading-6 whitespace-pre-wrap wrap-break-word"
                 >
-                  {highlightJwt(value)}
+                  {highlightJwt(value ? value : "")}
                 </pre>
 
                 <textarea
                     id="jwt"
-                    value={value}
+                    value={value ? value : ""}
                     onChange={handleChange}
                     onScroll={handleScroll}
                     spellCheck={false}
