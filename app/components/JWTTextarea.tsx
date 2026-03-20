@@ -55,18 +55,11 @@ function highlightJwt(value: string): React.ReactNode {
     const parts = value.split(".");
 
     return parts.map((part, index) => {
-        const partClassName =
-            index === 0
-                ? "text-blue-600"
-                : index === 1
-                    ? "text-green-600"
-                    : index === 2
-                        ? "text-red-600"
-                        : "text-gray-500";
+        const colorClasses = ["text-red-600", "text-yellow-600", "text-green-600", "text-blue-600", "text-black"];
 
         return (
             <React.Fragment key={index}>
-                <span className={partClassName}>{part}</span>
+                <span className={colorClasses[index]}>{part}</span>
                 {index < parts.length - 1 && <span className="text-gray-900">.</span>}
             </React.Fragment>
         );
