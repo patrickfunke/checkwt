@@ -29,7 +29,8 @@ export default function Home() {
                 body: JSON.stringify({ token }),
             });
             if (!res.ok) {
-                setErrorMessage(res.statusText);
+                const {error} = await res.json();
+                setErrorMessage(error);
                 setHeader("");
                 setPayload("");
                 setSignatureValid(null);
