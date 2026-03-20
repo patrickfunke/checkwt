@@ -1,0 +1,55 @@
+openapi: 3.0.3
+info:
+  title: Checkwt
+  version: 1.0.0
+  description: Check your JWT and JWE
+
+servers:
+  - url: https://checkwt.io
+
+paths:
+  /decode:
+    post:
+      summary: Decode JWT
+      tags:
+        - Decode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JWTRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWTResponse'
+        400:
+          description: Bad request - token not readable
+        404:
+          description: Encryption key not found
+
+components:
+  schemas:
+    JWTRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJFZERTQSIsImtpZCI6IjAxOWQwMTY0LTdjNGMtNzA4YS04MjU3LTA2ODhjYmFiODQ3NyIsInR5cCI6IkpXVCJ9.eyJjb3VudHJ5IjoiZ2xvYmFsIiwiZGVzY3JpcHRpb24iOiIiLCJlbnZpcm9ubWVudCI6InRlc3QiLCJleHAiOjE4MDUzODA4NTUsImlhdCI6MTc3Mzg0NDg1NSwicHJvZHVjdCI6Imdsb2JhbGN1c3RvbWVyYWNjb3VudCJ9.jajR9nID-jtfUU2-qZrMcXKW4KQFBBulXVnwSMFuGnZefE_BPtrHAPxhIilIghxM1GHDRxhXv11Oi6PfrC3ZCw
+
+    JWTResponse:
+      type: object
+      required:
+        - header
+      properties:
+        header:
+          type: object
+        payload:
+          type: object
+        signatureValid:
+          type: boolean
