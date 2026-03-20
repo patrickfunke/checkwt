@@ -25,12 +25,12 @@ export default function Encode() {
             setEncoded("Error: Payload is not valid JSON");
             return;
         }
-        fetch("/encode", {
+        fetch("/api/encode", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ headers: parsedHeader, payload: parsedPayload }),
+            body: JSON.stringify({ header: parsedHeader, payload: parsedPayload }),
         })
             .then(res => {
                 console.log("Encode response status:", res.body);
