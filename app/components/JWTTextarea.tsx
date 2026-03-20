@@ -41,7 +41,7 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent text-lg leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent text-lg leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
                 />
             </div>
         </div>
@@ -56,12 +56,12 @@ function highlightJwt(value: string): React.ReactNode {
     const parts = value.split(".");
 
     return parts.map((part, index) => {
-        const colorClasses = ["text-red-600", "text-yellow-600", "text-green-600", "text-blue-600", "text-black"];
+        const colorClasses = ["text-red-600 dark:text-red-400", "text-yellow-600 dark:text-yellow-400", "text-green-600 dark:text-green-400", "text-blue-600 dark:text-blue-400", "text-black dark:text-white"];
 
         return (
             <React.Fragment key={index}>
                 <span className={colorClasses[index]}>{part}</span>
-                {index < parts.length - 1 && <span className="text-gray-900">.</span>}
+                {index < parts.length - 1 && <span className="text-purple-400">.</span>}
             </React.Fragment>
         );
     });
