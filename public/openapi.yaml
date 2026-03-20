@@ -110,15 +110,16 @@ components:
       required:
         - header
         - payload
+      description: |
+        The request to create a JWT. Keys are generated automatically by the server
+        (a new signing key is created and appended to the public JWKS.json).
       properties:
         header:
           type: object
+          description: JWT protected header (server will add `kid`/`alg` if missing)
         payload:
           type: object
-        signingKey:
-          type: object
-        encryptionKey:
-          type: object
+          description: JWT claims/payload
     EncodeResponse:
       type: object
       required:

@@ -9,7 +9,7 @@ export async function POST(req: Request) {
         const validHeader = validateHeader(header);
         const validPayload = validatePayload(payload);
 
-        const { privateKey, publicJwk } = await generateSignKey();
+        const { privateKey, publicJwk } = await generateSignKey(header.alg || 'EdDSA');
 
         const jwksPath = path.join(process.cwd(), 'public', 'JWKS.json');
         let jwks: any = { keys: [] };
@@ -24,8 +24,7 @@ export async function POST(req: Request) {
 
         jwks.keys.push(publicJwk);
         await fs.promises.writeFile(jwksPath, JSON.stringify(jwks, null, 2), 'utf-8');
-
-        const hdr = { ...validHeader, alg: publicJwk.alg || 'EdDSA', kid: publicJwk.kid };
+        const hdr = { ...validHeader, alg: publicJwk.alg, kid: publicJwk.kid };
         const token = await generateJWT(hdr, validPayload, privateKey);
 
         return new Response(JSON.stringify({ token }), { status: 200, headers: { 'Content-Type': 'application/json' } });

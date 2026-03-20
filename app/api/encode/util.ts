@@ -34,6 +34,6 @@ export async function generateJWT(header: any = {}, payload: any, privateKey: an
     const protectedHeader = { ...(header || {}) };
     if (!protectedHeader.typ) protectedHeader.typ = 'JWT';
     signer.setProtectedHeader(protectedHeader);
-    const token = await signer.setIssuedAt().sign(privateKey);
+    const token = await signer.sign(privateKey);
     return token;
 }
