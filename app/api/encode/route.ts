@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseInput, validateHeader, validatePayload, generateSignKey, generateJWT } from './util';
+import { getKeyById } from '../keys/[keyId]/util';
 
 export async function POST(req: Request) {
     try {
@@ -29,8 +30,8 @@ export async function POST(req: Request) {
         const hdr = { ...validHeader, alg, kid: publicJwk.kid };
         const token = await generateJWT(hdr, validPayload, privateKey);
 
-        const keyUrl = `/api/keys/${publicJwk.kid}`;
-        return new Response(JSON.stringify({ token, jwk: publicJwk, keyUrl }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        const fetchedKey = getKeyById(publicJwk.kid);
+        return new Response(JSON.stringify({ token, jwk: publicJwk, fetchedKey }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } catch (err: any) {
         return new Response(JSON.stringify({ error: err?.message || String(err) }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
