@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import PrettyPrint from "@/app/components/prettyPrint";
 import JwtTextarea from "@/app/components/JWTTextarea.tsx";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
     const [token, setToken] = useState("");
@@ -10,6 +11,18 @@ export default function Home() {
     const [payload, setPayload] = useState("");
     const [signatureValid, setSignatureValid] = useState(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [value, setValue] = useState<string>("");
+
+
+    async function copyTextToClipboard(text: string) {
+        try {
+            await navigator.clipboard.writeText(text);
+            console.log('Text copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    };
+
 
     const handleDecode = async () => {
         setErrorMessage(null);
@@ -29,7 +42,7 @@ export default function Home() {
                 body: JSON.stringify({ token }),
             });
             if (!res.ok) {
-                const {error} = await res.json();
+                const { error } = await res.json();
                 setErrorMessage(error);
                 setHeader("");
                 setPayload("");
@@ -53,7 +66,6 @@ export default function Home() {
     return (
         <div className="w-full h-full p-4 md:p-20 space-y-6">
             <h1 className="font-bold text-4xl text-center uppercase">checkwtf</h1>
-
             <div className="flex gap-4">
                 <div className="">
                     Paste a JWT below that you'd like to decode, validate, and verify.
@@ -62,8 +74,11 @@ export default function Home() {
             </div>
             <div className="flex md:flex-row flex-col gap-4">
                 <div className="w-full h-full">
-                    <div className="text-xl font-bold">JSON Web Token</div>
-                    <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} />
+                    <div className="text-xl font-bold">JSON Web Token <Button onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy to Clipboard" /></Button> <Button onClick={() => {
+                        setToken("");
+                        setValue("");
+                    }}><img className="w-4 h-4 cursor-pointer " src="/clear.png" alt="Clear" /></Button></div>
+                    <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
                 </div>
 
                 <div className="flex flex-col gap-4 w-full h-full">
