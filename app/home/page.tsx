@@ -62,7 +62,7 @@ export default function Home() {
             <div className="flex md:flex-row flex-col gap-4">
                 <div className="w-full h-full">
                     <div className="text-xl font-bold">JSON Web Token</div>
-                    <JwtTextarea onChange={(token) => setToken(token)}></JwtTextarea>
+                    <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} />
                 </div>
 
                 <div className="flex flex-col gap-4 w-full h-full">
