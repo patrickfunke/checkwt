@@ -73,7 +73,8 @@ export default function Home() {
                 <div className="text-red-500">{errorMessage ?? ''}</div>
             </div>
             <div className="flex md:flex-row flex-col gap-4">
-                <div className="w-full h-full">
+                <div className="flex flex-col gap-4 w-full">
+                    <div className="w-full">
                     <div className="text-xl font-bold w-full flex justify-between items-center">
                         JSON Web Token
                         <div className="flex gap-2">
@@ -86,21 +87,34 @@ export default function Home() {
                     </div>
                     <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
                 </div>
+                </div>
+
 
                 <div className="flex flex-col gap-4 w-full h-full">
                     <div>
                         <div className="text-xl font-bold">Decoded Header</div>
-                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-64 p-4">
+                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-48 p-4">
                             <PrettyPrint data={header} />
                         </div>
                     </div>
 
                     <div>
                         <div className="text-xl font-bold">Decoded Payload</div>
-                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-64 p-4">
+                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-48 p-4">
                             <PrettyPrint data={payload} />
                         </div>
                     </div>
+
+                    <div>
+                        <div className="text-xl font-bold">Used keys</div>
+                        <div className="bg-gray-50 rounded-lg border border-gray-300 h-48 p-4">
+                            
+                            <PrettyPrint data={{"keys": [{"kid":"dsaj", "alg":"HS256"}]}} />
+                            
+                        </div>
+                    </div>
+
+            
                 </div>
             </div>
         </div>

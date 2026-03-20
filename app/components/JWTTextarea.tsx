@@ -41,7 +41,7 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent text-lg leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 outline-blue-100 w-full resize-none rounded-lg h-139 p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent text-lg leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
                 />
             </div>
         </div>
