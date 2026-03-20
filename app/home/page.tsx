@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PrettyPrint from "@/app/components/prettyPrint";
+import JwtTextarea from "@/app/components/JWTTextarea.tsx";
 
 export default function Home() {
     const [token, setToken] = useState("");
@@ -50,21 +51,18 @@ export default function Home() {
 
     return (
         <div className="w-full h-full p-4 md:p-20 space-y-6">
-            <h1 className="font-bold text-4xl text-center">checkwt</h1>
+            <h1 className="font-bold text-4xl text-center uppercase">checkwtf</h1>
 
-            <div className="w-full">
-                Paste a JWT below that you'd like to decode, validate, and verify.
+            <div className="flex gap-4">
+                <div className="">
+                    Paste a JWT below that you'd like to decode, validate, and verify.
+                </div>
+                <div className="text-red-500">{errorMessage ?? ''}</div>
             </div>
-            <div className="text-red-500">{errorMessage && errorMessage}</div>
             <div className="flex md:flex-row flex-col gap-4">
                 <div className="w-full h-full">
                     <div className="text-xl font-bold">JSON Web Token</div>
-
-                    <textarea
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                        className="font-mono border border-gray-300 outline-blue-100 w-full resize-none rounded-lg h-139 p-4"
-                    />
+                    <JwtTextarea onChange={(token) => setToken(token)}></JwtTextarea>
                 </div>
 
                 <div className="flex flex-col gap-4 w-full h-full">
