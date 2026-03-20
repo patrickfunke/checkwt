@@ -74,10 +74,16 @@ export default function Home() {
             </div>
             <div className="flex md:flex-row flex-col gap-4">
                 <div className="w-full h-full">
-                    <div className="text-xl font-bold">JSON Web Token <Button onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy to Clipboard" /></Button> <Button onClick={() => {
-                        setToken("");
-                        setValue("");
-                    }}><img className="w-4 h-4 cursor-pointer " src="/clear.png" alt="Clear" /></Button></div>
+                    <div className="text-xl font-bold w-full flex justify-between items-center">
+                        JSON Web Token
+                        <div className="flex gap-2">
+                            <Button className="" onClick={() => copyTextToClipboard(token)}><img className="w-4 h-4 cursor-pointer " src="/copy.png" alt="Copy to Clipboard" /></Button>
+                            <Button className="" onClick={() => {
+                                setToken("");
+                                setValue("");
+                            }}><img className="w-4 h-4 cursor-pointer " src="/clear.png" alt="Clear" /></Button>
+                        </div>
+                    </div>
                     <JwtTextarea onChange={(token) => setToken(token)} errorMessage={errorMessage} value={value} onValueChange={(val: string) => setValue(val)}/>
                 </div>
 
