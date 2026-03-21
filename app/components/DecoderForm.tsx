@@ -99,6 +99,11 @@ export default function DecoderForm() {
                             }] : []),
                             ...(tokenType ? [{ type: "info" as const, message: `Detected: ${tokenType}` }] : []),
                         ]}
+                        showDescription={false}
+                        onClear={() => {
+                            clearState();
+                            setValue("")
+                        }}
                     >
                         <JwtTextarea
                             onChange={(token) => setToken(token)}
@@ -115,10 +120,11 @@ export default function DecoderForm() {
                     <TextAreaWrapper
                         title="Decoded Header"
                         deleteEnabled={false}
-                        description={`Tells you <span class="italic">what type of token</span> and <span class="italic">how it's signed</span> (like the method used to protect it).`}
+                        description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
+                        showDescription={header !== ""}
                     >
                         <div
-                            className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                            className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                             <PrettyPrint data={header} />
                         </div>
                     </TextAreaWrapper>
@@ -129,10 +135,11 @@ export default function DecoderForm() {
                     <TextAreaWrapper
                         title="Decoded Payload"
                         deleteEnabled={false}
-                        description={`Contains the <span className="italic">actual data</span> (for example, user ID or permissions).`}
+                        description={`Contains the actual data (for example, user ID or permissions).`}
+                        showDescription={payload !== ""}
                     >
                         <div
-                            className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                            className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                             <PrettyPrint data={(() => {
                                 try {
                                     return JSON.parse(payload);
@@ -148,10 +155,11 @@ export default function DecoderForm() {
                     <TextAreaWrapper
                         title="Used Keys"
                         deleteEnabled={false}
-                        description={`A secret or private key is used to create a signature so you can <span className="italic">verify the token hasn't been tampered with</span>.`}
+                        description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
+                        showDescription={usedKey !== ""}
                     >
                         <div
-                            className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                            className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                             <PrettyPrint data={usedKey} />
                         </div>
                     </TextAreaWrapper>

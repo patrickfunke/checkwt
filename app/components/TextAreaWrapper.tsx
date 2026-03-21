@@ -18,6 +18,7 @@ interface TextAreaWrapperProps {
     children: ReactNode;
     onCopy?: () => void;
     onClear?: () => void;
+    showDescription: boolean;
 }
 
 export default function TextAreaWrapper({
@@ -29,6 +30,7 @@ export default function TextAreaWrapper({
                                             children,
                                             onCopy,
                                             onClear,
+                                            showDescription
                                         }: TextAreaWrapperProps) {
     const [copied, setCopied] = useState(false);
 
@@ -61,7 +63,7 @@ export default function TextAreaWrapper({
         <div className="flex flex-col gap-2">
             {/* Header mit Titel + Buttons */}
             <div className="flex justify-between items-center font-bold">
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>{title}</div>
 
                     {/* Messages */}
@@ -113,10 +115,10 @@ export default function TextAreaWrapper({
             {/* Hauptinhalt */}
             {children}
 
-            {description && (
+            {(showDescription && description) && (
                 <div className="mt-2 text-sm flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg w-full">
                     <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
-                    <div dangerouslySetInnerHTML={{__html: description }} />
+                    <div>{description }</div>
                 </div>
             )}
         </div>
