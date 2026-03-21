@@ -24,7 +24,7 @@ export default function DocsPage() {
         url: '/openapi.yaml',
         dom_id: '#swagger-ui',
         layout: 'BaseLayout',
-        requestInterceptor: (req) => {
+        requestInterceptor: (req: Request) => {
           try {
             const original = new URL(req.url);
             // Route external requests to local origin + /api prefix
@@ -35,8 +35,10 @@ export default function DocsPage() {
               pathname = '/api' + pathname;
             }
             local.pathname = pathname;
-            const newUrl = local.toString();
-            req.url = newUrl;
+            const newUrl = `${original.origin}/api${original.pathname}`;
+            const modifiedRequest = new Request(newUrl, req);
+            // Use 'modifiedRequest' instead of 'req' for further processing
+            return modifiedRequest;
           } catch (e) {
             // leave request unchanged on error
           }

@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
                 type: 'JWE',
                 payload: decrypted.plaintext,
                 signatureValid: true, // TODO das macht iwie nicht so richtig Sinn bei JWEs
-                usedKey: headerWithKid.kid ? (getPrivateKeyById(headerWithKid.kid as string) || null) : null,
+                usedKey: headerWithKid.kid ? (await getPrivateKeyById(headerWithKid.kid as string) || null) : null,
             },
             { status: 200 }
         );
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
                 type: 'JWT',
                 payload: decoded.payload,
                 signatureValid: decoded.signatureCheck,
-                usedKey: getKeyById(decoded.header.kid)
+                usedKey: decoded.header.kid ? await getKeyById(decoded.header.kid) : null
             },
             { status: 200 }
         );

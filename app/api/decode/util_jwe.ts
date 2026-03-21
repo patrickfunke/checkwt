@@ -1,7 +1,6 @@
 import { compactDecrypt, decodeProtectedHeader, importJWK } from "jose";
-import path from "path";
-import fs from "fs";
 import { getPrivateKeyById } from '../keys/[keyId]/util';
+import { getKeys } from '@/lib/jwks-store';
 
 type JweHeader = {
     alg?: string;
@@ -72,21 +71,14 @@ function keyMatchesHeader(key: JwkLike, header: JweHeader) {
 async function resolveDecryptionKeys(header: JweHeader) {
     // If header contains a kid, try to resolve that single private key via helper first.
     if (header.kid) {
-        const single = getPrivateKeyById(header.kid);
+        const single = await getPrivateKeyById(header.kid);
         if (single && keyMatchesHeader(single as JwkLike, header)) {
             return [single as JwkLike];
         }
         // if a specific kid was requested but not found/matching, fall through to scan entire private JWKS
     }
 
-    const jwksPath = path.resolve(process.cwd(), 'private', 'JWKS.json');
-
-    if (!fs.existsSync(jwksPath)) {
-        throw new Error("JWKS not found");
-    }
-
-    const jwks = JSON.parse(fs.readFileSync(jwksPath, 'utf8')) as { keys?: JwkLike[] };
-    const keys = Array.isArray(jwks.keys) ? jwks.keys : [];
+    const keys = await getKeys('private') as JwkLike[];
 
     const matching = keys.filter((k) => keyMatchesHeader(k, header));
 

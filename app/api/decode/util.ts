@@ -1,6 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import { importJWK, jwtVerify, compactDecrypt, decodeProtectedHeader } from 'jose';
+import { importJWK, jwtVerify } from 'jose';
 import { getKeyById } from '../keys/[keyId]/util';
 
 /* First step: JWT decode */
@@ -46,18 +44,16 @@ export function decodeHeader(headerB64: string) {
 
 /* Second step: JWT decode */
 
-function checkSignature(token: string) {
+async function checkSignature(token: string) {
     const { header } = parseToken(token);
     const decoded = decodeHeader(header);
-    const key = getKeyById(decoded.kid);
+    const key = decoded.kid ? await getKeyById(decoded.kid) : null;
     if (!key) {
-        return Promise.resolve({ verified: false, reason: 'No matching key in JWKS' });
+        return { verified: false, reason: 'No matching key in JWKS' };
     }
-    return (async () => {
-        const imported = await importJWK(key as any, key.alg || 'EdDSA');
-        await jwtVerify(token, imported);
-        return { verified: true };
-    })();
+    const imported = await importJWK(key as any, key.alg || 'EdDSA');
+    await jwtVerify(token, imported);
+    return { verified: true };
 }
 
 

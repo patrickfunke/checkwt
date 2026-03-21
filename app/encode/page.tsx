@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "@/app/components/ThemeSwitcher.tsx";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const JWT_ALGS = ["EdDSA", "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512"] as const;
 const JWE_ALGS = ["RSA-OAEP", "RSA-OAEP-256", "RSA-OAEP-384", "RSA-OAEP-512", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW"] as const;
@@ -17,6 +17,21 @@ export default function Encode() {
     const [encoded, setEncoded] = useState('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+    const focusPayloadInput = useCallback(() => {
+        const el = document.querySelector('[aria-label="Editable Payload JSON"]') as HTMLTextAreaElement | null;
+        if (!el) {
+            return;
+        }
+
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, []);
+
+    const buildPayloadFromChatDraft = useCallback((text: string) => {
+        return JSON.stringify({
+            chatMessage: text,
+        }, null, 2);
+    }, []);
+
     async function copyTextToClipboard(text: string) {
         try {
             await navigator.clipboard.writeText(text);
@@ -25,14 +40,14 @@ export default function Encode() {
         }
     }
 
-    const doEncodeCall = async () => {
+    const doEncodeCall = useCallback(async () => {
         let parsedPayload;
         try {
             parsedPayload = JSON.parse(payload);
         } catch (e) {
             setErrorMessage("Payload is not valid JSON");
             setEncoded("");
-            return;
+            return null;
         }
 
         const header = mode === "jwe"
@@ -52,18 +67,69 @@ export default function Encode() {
                 const data = await res.json();
                 setErrorMessage(data.error || "Encoding failed");
                 setEncoded("");
-                return;
+                return null;
             }
 
             const data = await res.json();
             setErrorMessage(null);
-            setEncoded(data.token ?? "");
+            const nextToken = data.token ?? "";
+            setEncoded(nextToken);
+            return nextToken;
         } catch (err) {
             console.error("Error encoding JWT:", err);
             setErrorMessage("Encoding failed");
             setEncoded("");
+            return null;
         }
-    };
+    }, [jweAlg, jweEnc, jwtAlg, mode, payload]);
+
+    useEffect(() => {
+        const onMessage = (event: MessageEvent) => {
+            const data = event.data as
+                | { type?: string; text?: unknown; requestId?: unknown }
+                | undefined;
+
+            if (!data || typeof data.type !== "string") {
+                return;
+            }
+
+            if (data.type === "draft" || data.type === "send") {
+                if (typeof data.text === "string") {
+                    setPayload(buildPayloadFromChatDraft(data.text));
+                }
+                return;
+            }
+
+            if (data.type === "focusEncodePayloadInput") {
+                focusPayloadInput();
+                return;
+            }
+
+            if (data.type === "encodeAndReturnToken") {
+                const requestId = typeof data.requestId === "string" ? data.requestId : "";
+                if (typeof data.text === "string") {
+                    setPayload(buildPayloadFromChatDraft(data.text));
+                }
+
+                setTimeout(() => {
+                    void doEncodeCall().then((token) => {
+                        window.parent.postMessage(
+                            {
+                                type: "encodedToken",
+                                requestId,
+                                token,
+                                error: token ? null : "Encoding failed",
+                            },
+                            "*",
+                        );
+                    });
+                }, 0);
+            }
+        };
+
+        window.addEventListener("message", onMessage);
+        return () => window.removeEventListener("message", onMessage);
+    }, [buildPayloadFromChatDraft, doEncodeCall, focusPayloadInput]);
 
     return (
         <div className="w-full h-screen p-4 md:p-10 space-y-6">
