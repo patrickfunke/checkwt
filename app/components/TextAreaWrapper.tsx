@@ -16,7 +16,7 @@ interface TextAreaWrapperProps {
     messages?: Message[];
     description?: string;
     children: ReactNode;
-    onCopy?: () => void;
+    formContentText: string;
     onClear?: () => void;
     showDescription: boolean;
 }
@@ -28,18 +28,36 @@ export default function TextAreaWrapper({
                                             messages = [],
                                             description,
                                             children,
-                                            onCopy,
+                                            formContentText,
                                             onClear,
                                             showDescription
                                         }: TextAreaWrapperProps) {
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = async () => {
-        if (onCopy) {
-            await onCopy();
+    const getParsedConentText = () => {
+        if (formContentText === undefined || formContentText === null) return null;
+
+        let textToCopy: string;
+
+        if (typeof formContentText === "object") {
+            textToCopy = JSON.stringify(formContentText, null, 2);
+        } else {
+            textToCopy = String(formContentText);
         }
-        setCopied(true);
-        setTimeout(() => setCopied(false), 750);
+        return textToCopy;
+    }
+
+    const handleCopy = async () => {
+        const textToCopy = getParsedConentText();
+        if (textToCopy == null) return;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1000);
+        } catch (err) {
+            console.error("Failed to copy:", err);
+        }
     };
 
     const handleClear = () => {
@@ -83,6 +101,7 @@ export default function TextAreaWrapper({
                             title="Copy"
                             className="cursor-pointer"
                             onClick={handleCopy}
+                            disabled={formContentText == ""}
                         >
                             {
                                 copied ?
@@ -107,7 +126,7 @@ export default function TextAreaWrapper({
                         </Button>
                     )}
                     {deleteEnabled && (
-                        <Button title="Clear" className="cursor-pointer" onClick={handleClear}>
+                        <Button title="Clear" className="cursor-pointer" onClick={handleClear} disabled={formContentText == ""}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path

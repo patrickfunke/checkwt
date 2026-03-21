@@ -15,14 +15,6 @@ export default function DecoderForm() {
     const [value, setValue] = useState<string>("");
 
 
-    async function copyTextToClipboard(text: string) {
-        try {
-            await navigator.clipboard.writeText(text);
-            console.log('Text copied to clipboard');
-        } catch (err) {
-            console.error('Failed to copy: ', err);
-        }
-    };
 
     const clearState = () => {
         setErrorMessage(null);
@@ -101,9 +93,10 @@ export default function DecoderForm() {
                         showDescription={false}
                         onClear={() => {
                             clearState();
-                            setValue("")
+                            setToken("");
+                            setValue("");
                         }}
-                        onCopy={() => copyTextToClipboard(token)}
+                        formContentText={token}
                     >
                         <JwtTextarea
                             onChange={(token) => setToken(token)}
@@ -122,7 +115,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
                         showDescription={header !== ""}
-                        onCopy={() => copyTextToClipboard(JSON.stringify(header))}
+                        formContentText={header}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
@@ -138,7 +131,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`Contains the actual data (for example, user ID or permissions).`}
                         showDescription={payload !== ""}
-                        onCopy={() => copyTextToClipboard(JSON.stringify(payload))}
+                        formContentText={payload}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
@@ -159,7 +152,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
                         showDescription={usedKey !== ""}
-                        onCopy={() => copyTextToClipboard(JSON.stringify(usedKey))}
+                        formContentText={usedKey}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
