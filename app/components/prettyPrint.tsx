@@ -45,7 +45,7 @@ export default function PrettyPrint({ data }: { data: any }) {
 
         return (
             <pre
-                className="json-pre font-mono"
+                className="json-pre font-mono text-sm"
                 dangerouslySetInnerHTML={{ __html: syntaxHighlight(data) }}
             />
         );

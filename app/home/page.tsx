@@ -98,23 +98,21 @@ export default function Home() {
             <div className="text-sm text-center max-w-200 mx-auto">
                 Decode, verify, and generate JSON Web Tokens, which are an open, industry standard <a href="https://datatracker.ietf.org/doc/html/rfc7519" target="_blank" className="underline">RFC-7519</a> method for representing claims securely between two parties.
             </div>
-            <div className="flex gap-4">
-                <div className="">
-                    Paste a JWT below that you'd like to decode, validate, and verify.
-                </div>
-                <div className="text-red-500">{errorMessage ?? ''}</div>
+            <div className="">
+                Paste a JWT below that you'd like to decode, validate, and verify.
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <div className="text-xl font-bold flex justify-between items-center">
                             <div className="flex gap-2">
                             <div>JSON Web Token</div>
-                            {signatureValid !== null && <div className={(signatureValid === true ? "text-green-500" : "text-red-500") + " flex flex-row items-center gap-2 text-sm"}>
+                            {signatureValid !== null && <div className={(signatureValid === true ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10") + " flex flex-row items-center gap-2 text-xs px-2 py-1 rounded-lg border"}>
                                 {signatureValid === true ? <img className="w-2 h-2 inline" src="/correct.png" alt="Valid" /> : <img className="w-2 h-2 inline" src="/wrong.png" alt="Invalid" />}
-                                {signatureValid === true ? "Signature is valid" : `Signature is invalid: ${signatureInvalidReason ?? ''}`}
+                                {signatureValid === true ? "Signature is valid" : `Signature is invalid`}
                             </div>
                             }
-                            {tokenType && <div className="text-sm italic ml-2">Detected: {tokenType}</div>}
+                            {tokenType && <div className="text-xs px-2 py-1 rounded-lg border bg-blue-500/10 text-blue-400">Detected: {tokenType}</div>}
+                                {errorMessage && <div className="text-red-500 text-xs px-2 py-1 rounded-lg border bg-red-500/10">{errorMessage ?? ''}</div>}
                         </div>
                         <div className="flex gap-2">
                             <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(token)}>

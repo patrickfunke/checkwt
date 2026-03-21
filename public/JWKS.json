@@ -40,6 +40,38 @@
       "kid": "b93a2ebc-7c1f-4ccc-905e-003d3dbb82de",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "AV6m_18KBHM7j0eldfzWJaXcrlypS9TiQsVDtPxyO5M",
+      "kty": "OKP",
+      "kid": "a8f2dcf1-36be-40f1-a095-abc2a924fe59",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "4fGk5Chkq3lXT3BhRYabCpIo1fHm1uwYnkPiPyqBzPo",
+      "kty": "OKP",
+      "kid": "9b58e4b2-7103-4147-8e3b-e724e6113e3c",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "1VMyIj0ZeiB2X880ULMaTIPB5uGyrMTHquuy5TjuHY4",
+      "kty": "OKP",
+      "kid": "9674a0b9-df81-4067-8e5f-61bb3e8e9e3d",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "KDTpfVPOSMnQphmfE1xf48eKt-X0tPJFUKsmgMkCc48",
+      "kty": "OKP",
+      "kid": "98073d60-0ea5-4c96-8fdd-323939f0c272",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }
