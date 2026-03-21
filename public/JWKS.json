@@ -107,17 +107,17 @@
     },
     {
       "crv": "Ed25519",
-      "x": "9F8JHxEG19aRKAN71NSt-W1qb-R-X7166sTiohVV7zI",
+      "x": "EnmuLW73yj-v1Pc9iJL-fNg2s0zijgHm4egKwlylEw0",
       "kty": "OKP",
-      "kid": "346b9bc2-1625-4e94-8275-21450b70f40c",
+      "kid": "71fe91f8-9f00-4cc1-8f4f-729af8dd5a10",
       "alg": "EdDSA",
       "use": "sig"
     },
     {
       "crv": "Ed25519",
-      "x": "1N3OMqYuObfrRn4RP-IBoHqCU-PahwX9LVfHolfzbFA",
+      "x": "kiuSbqz0FbBAx42qbzLOuvk_W1aSxPTZzFkV2Sc2XLE",
       "kty": "OKP",
-      "kid": "3de85d4c-6a37-479b-a7bd-ae53deeee894",
+      "kid": "25903b61-e2e0-4aa8-a53c-bc525cf475ea",
       "alg": "EdDSA",
       "use": "sig"
     }
