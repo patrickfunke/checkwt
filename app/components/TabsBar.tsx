@@ -33,7 +33,7 @@ export default function TabsBar({ onTabSelected, tabsContent }: TabsBarProps) {
           </TabsTrigger>
         </TabsList>
 
-        <div className="w-full max-w-4xl animate-fade-in">
+        <div className="w-full animate-fade-in">
           <div className="w-full">{tabsContent}</div>
         </div>
       </Tabs>
