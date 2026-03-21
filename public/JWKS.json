@@ -136,6 +136,14 @@
       "kid": "268913c8-499c-4f65-8f27-5c0b6749fb16",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "JGe0aNEFpMwM4KuoNGnp5RZxoHQIzHXhgO4Qg2BFcrM",
+      "kty": "OKP",
+      "kid": "7633c947-f4ec-4b26-a339-4f1f833c88c2",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }

@@ -122,7 +122,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
                         showDescription={header !== ""}
-                        onCopy={() => copyTextToClipboard(header)}
+                        onCopy={() => copyTextToClipboard(JSON.stringify(header))}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
@@ -138,7 +138,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`Contains the actual data (for example, user ID or permissions).`}
                         showDescription={payload !== ""}
-                        onCopy={() => copyTextToClipboard(payload)}
+                        onCopy={() => copyTextToClipboard(JSON.stringify(payload))}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
@@ -159,7 +159,7 @@ export default function DecoderForm() {
                         deleteEnabled={false}
                         description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
                         showDescription={usedKey !== ""}
-                        onCopy={() => copyTextToClipboard(usedKey)}
+                        onCopy={() => copyTextToClipboard(JSON.stringify(usedKey))}
                     >
                         <div
                             className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
