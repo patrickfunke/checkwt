@@ -8,7 +8,7 @@ export async function GET(
     const { keyId } = await params;
 
     // Schlüssel abrufen
-    const key = getKeyById(keyId);
+    const key = await getKeyById(keyId);
 
     if (!key) {
         return NextResponse.json(

@@ -19,5 +19,5 @@ npx ts-node ./app/api/decode/test.ts
 
 Notes
 - If you see the ESM warning, add `"type": "module"` to `package.json` or run via `ts-node` as above.
-- The test reads the JWKS from `public/JWKS.json`; to verify signatures ensure the `kid` in the token header matches an entry there.
+- Signature verification reads keys from Supabase (`jwks_keys` table by default); ensure the token header `kid` exists there with scope `public`.
 - To run the test from plain JS: transpile with `npx tsc` then `node ./app/api/decode/test.js` (adjust path if needed).

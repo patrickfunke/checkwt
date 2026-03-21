@@ -114,11 +114,11 @@ components:
         - payload
       description: |
         The request to create a JWT. Keys are generated automatically by the server
-        (a new signing key is created and appended to the public JWKS.json).
+        (a new signing key is created and persisted in Supabase).
         Use `mode` in the body to select `jwt` (sign) or `jwe` (encrypt).
         If `mode` is `jwe` and `recipientKey` is omitted, the server will generate an
-        encryption keypair, append the public key to `public/JWKS.json` and store the
-        private key in `private/JWKS.json` for decryption.
+        encryption keypair and persist both public and private JWKs in Supabase
+        (private keys are stored in private scope for decryption).
       properties:
         header:
           type: object
