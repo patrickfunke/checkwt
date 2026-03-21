@@ -10,6 +10,10 @@ const keyDescriptions: Record<string, string> = {
     nbf: 'Not Before: Identifies the time before which the JWT must not be accepted',
     iat: 'Issued At: Identifies the time at which the JWT was issued',
     jti: 'JWT ID: Unique identifier for the JWT',
+    alg: 'Algorithm: The algorithm used to sign or encrypt the JWT',
+    typ: 'Type: The type of the token, typically "JWT"',
+    enc: 'Encryption Algorithm: The algorithm used to encrypt the JWT (for JWE)',
+    kid: 'Key ID: A hint indicating which key was used to secure the JWT',
     // Add more as needed
 };
 
@@ -37,16 +41,20 @@ function renderValue(value: any, indent = 0): React.ReactNode {
                     <React.Fragment key={k}>
                         <br />
                         {Array(indent + 2).fill(' ').join('')}
-                        <Tooltip.Root delayDuration={200}>
-                            <Tooltip.Trigger asChild>
-                                <span className="key underline decoration-dashed decoration-2 cursor-help">
-                                    {JSON.stringify(k)}
-                                </span>
-                            </Tooltip.Trigger>
-                            <Tooltip.Content className="z-50 bg-black text-white dark:bg-gray-200 dark:text-black rounded px-2 py-1 text-xs shadow-lg border border-gray-700 dark:border-gray-300">
-                                    {keyDescriptions[k] || 'No description'}
+                        {keyDescriptions[k] ? (
+                            <Tooltip.Root delayDuration={200}>
+                                <Tooltip.Trigger asChild>
+                                    <span className="key underline decoration-dashed decoration-2 cursor-help">
+                                        {JSON.stringify(k)}
+                                    </span>
+                                </Tooltip.Trigger>
+                                <Tooltip.Content className="z-50 bg-black text-white dark:bg-gray-200 dark:text-black rounded px-2 py-1 text-xs shadow-lg border border-gray-700 dark:border-gray-300">
+                                    {keyDescriptions[k]}
                                 </Tooltip.Content>
-                        </Tooltip.Root>
+                            </Tooltip.Root>
+                        ) : (
+                            <span className="key">{JSON.stringify(k)}</span>
+                        )}
                         <span className="punct">: </span>
                         {renderValue(v, indent + 2)}{i < entries.length - 1 ? ',' : ''}
                     </React.Fragment>
