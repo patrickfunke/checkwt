@@ -32,15 +32,11 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                 <pre
                     ref={highlightRef}
                     aria-hidden="true"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        textareaRef.current?.focus();
-                    }}
                     onMouseLeave={() => setTooltip(null)}
                     className={
-                        "absolute inset-0 z-20 min-h-35 overflow-auto rounded-xl p-4 font-mono leading-6 whitespace-pre-wrap wrap-break-word " +
-                        (showSegmentTooltips ? "pointer-events-auto" : "pointer-events-none")
+                        "jwt-highlight absolute inset-0 z-20 overflow-auto rounded-xl p-4 font-mono leading-6 whitespace-pre-wrap pointer-events-none"
                     }
+                    style={{ minHeight: 673, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', wordBreak: 'break-word' }}
                 >
                     {highlightJwt(value ? value : "", showSegmentTooltips, setTooltip)}
                 </pre>
@@ -53,7 +49,8 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 z-10 min-h-35 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"jwt-input absolute inset-0 z-10 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg p-4"}
+                    style={{ minHeight: 673 }}
                 />
 
                 {tooltip && showSegmentTooltips && (
@@ -65,6 +62,16 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                     </div>
                 )}
             </div>
+            <style jsx>{`
+                .jwt-highlight::selection {
+                    background: rgba(59,130,246,0.18);
+                    color: inherit;
+                }
+                .jwt-input::selection {
+                    background: rgba(59,130,246,0.18);
+                    color: transparent;
+                }
+            `}</style>
         </div>
     );
 }
@@ -79,7 +86,7 @@ function highlightJwt(
     }
 
     const parts = value.split(".");
-    const labels = ["Header (Algorithm, Typ)", "Payload (Claims)", "Signature (Pruefung)", "Segment 4", "Segment 5"];
+    const labels = ["Header (Algorithm, Typ)", "Payload (Claims)", "Signature (Prüfung)", "Segment 4", "Segment 5"];
 
     return parts.map((part, index) => {
         const colorClasses = ["text-red-600 dark:text-red-400", "text-yellow-600 dark:text-yellow-400", "text-green-600 dark:text-green-400", "text-blue-600 dark:text-blue-400", "text-black dark:text-white"];
