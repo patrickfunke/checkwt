@@ -152,6 +152,22 @@
       "kid": "5ba85631-f978-4fcc-87c0-14f205e0abef",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "pKwvBIiXwkEAMmzAp6WojFZFFJxFOnpsECoZXBdCerw",
+      "kty": "OKP",
+      "kid": "cf8f49d6-5ed1-489b-bab2-fadc1c8ee06b",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "TLTsj_D0h18dD7w2CUDJCsrPF_K_8eDHb1xe1JnKwOw",
+      "kty": "OKP",
+      "kid": "5af5dd43-8581-47df-8a07-37aa8dbbf5ef",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }

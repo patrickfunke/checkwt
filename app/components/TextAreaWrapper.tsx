@@ -13,24 +13,24 @@ interface TextAreaWrapperProps {
     title: string;
     copyEnabled?: boolean;
     deleteEnabled?: boolean;
+    showDescription?: boolean;
     messages?: Message[];
     description?: string;
     children: ReactNode;
     formContentText: string;
     onClear?: () => void;
-    showDescription: boolean;
 }
 
 export default function TextAreaWrapper({
                                             title,
                                             copyEnabled = true,
                                             deleteEnabled = true,
+                                            showDescription = true,
                                             messages = [],
                                             description,
                                             children,
                                             formContentText,
                                             onClear,
-                                            showDescription
                                         }: TextAreaWrapperProps) {
     const [copied, setCopied] = useState(false);
 
@@ -96,6 +96,11 @@ export default function TextAreaWrapper({
                     ))}
                 </div>
                 <div className="flex gap-2">
+                    <Button disabled={true}> {/*Placeholder*/}
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                        </svg>
+                    </Button>
                     {copyEnabled && (
                         <Button
                             title="Copy"
@@ -107,7 +112,8 @@ export default function TextAreaWrapper({
                                 copied ?
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                          xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+                                        <path d="M13 4L6 12L3 9" stroke="currentColor" strokeWidth="1.5"
+                                              strokeLinecap="round"
                                               strokeLinejoin="round"></path>
                                     </svg> :
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
@@ -126,7 +132,8 @@ export default function TextAreaWrapper({
                         </Button>
                     )}
                     {deleteEnabled && (
-                        <Button title="Clear" className="cursor-pointer" onClick={handleClear} disabled={formContentText == ""}>
+                        <Button title="Clear" className="cursor-pointer" onClick={handleClear}
+                                disabled={formContentText == ""}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -145,7 +152,8 @@ export default function TextAreaWrapper({
             {children}
 
             {(showDescription && description) && (
-                <div className="mt-2 text-sm flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg w-full">
+                <div
+                    className="mt-2 text-sm flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg w-full">
                     <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
                     <div>{description }</div>
                 </div>
