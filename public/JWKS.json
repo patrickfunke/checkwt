@@ -104,6 +104,22 @@
       "kid": "81d974af-a92d-4138-976a-79db50ecc726",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "EnmuLW73yj-v1Pc9iJL-fNg2s0zijgHm4egKwlylEw0",
+      "kty": "OKP",
+      "kid": "71fe91f8-9f00-4cc1-8f4f-729af8dd5a10",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "kiuSbqz0FbBAx42qbzLOuvk_W1aSxPTZzFkV2Sc2XLE",
+      "kty": "OKP",
+      "kid": "25903b61-e2e0-4aa8-a53c-bc525cf475ea",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }
