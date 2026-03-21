@@ -39,3 +39,27 @@ export function getKeyById(kid: string): JWK | null {
         return null;
     }
 }
+
+/**
+ * Wie `getKeyById`, aber liest aus dem privaten JWKS (private/JWKS.json).
+ * Wird für JWE/Entschlüsselung verwendet, da dort private Schlüssel nötig sind.
+ */
+export function getPrivateKeyById(kid: string): JWK | null {
+    try {
+        const jwksPath = path.resolve(process.cwd(), 'private', 'JWKS.json');
+
+        if (!fs.existsSync(jwksPath)) {
+            console.error('Private JWKS-Datei nicht gefunden.');
+            return null;
+        }
+
+        const jwks: JWKS = JSON.parse(fs.readFileSync(jwksPath, 'utf8'));
+
+        const key = jwks.keys.find((k) => k.kid === kid);
+
+        return key || null;
+    } catch (error) {
+        console.error('Fehler beim Lesen der privaten JWKS-Datei:', error);
+        return null;
+    }
+}

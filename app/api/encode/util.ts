@@ -20,7 +20,7 @@ export function validatePayload(payload: any) {
 }
 
 export async function generateSignKey(alg = 'EdDSA') {
-    const { publicKey, privateKey } = await generateKeyPair(alg);
+    const { publicKey, privateKey } = await generateKeyPair(alg as any, { extractable: true });
     const publicJwk: any = await exportJWK(publicKey);
     const kid = randomUUID();
     publicJwk.kid = kid;

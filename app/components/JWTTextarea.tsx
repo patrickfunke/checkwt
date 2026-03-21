@@ -5,10 +5,13 @@ type JwtTextareaProps = {
     errorMessage?: string | null;
     value: string | null;
     onValueChange?: (value: string) => void;
+    showSegmentTooltips?: boolean;
 };
 
-export default function JwtTextarea({ onChange, errorMessage, value, onValueChange }: JwtTextareaProps) {
+export default function JwtTextarea({ onChange, errorMessage, value, onValueChange, showSegmentTooltips = false }: JwtTextareaProps) {
     const highlightRef = useRef<HTMLPreElement | null>(null);
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;
@@ -29,38 +32,84 @@ export default function JwtTextarea({ onChange, errorMessage, value, onValueChan
                 <pre
                     ref={highlightRef}
                     aria-hidden="true"
-                    className="pointer-events-none min-h-35 overflow-auto rounded-xl p-4 font-mono leading-6 whitespace-pre-wrap wrap-break-word"
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        textareaRef.current?.focus();
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                    className={
+                        "absolute inset-0 z-20 min-h-35 overflow-auto rounded-xl p-4 font-mono leading-6 whitespace-pre-wrap wrap-break-word " +
+                        (showSegmentTooltips ? "pointer-events-auto" : "pointer-events-none")
+                    }
                 >
-                  {highlightJwt(value ? value : "")}
+                    {highlightJwt(value ? value : "", showSegmentTooltips, setTooltip)}
                 </pre>
 
                 <textarea
+                    ref={textareaRef}
                     id="jwt"
                     value={value ? value : ""}
                     onChange={handleChange}
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 min-h-35 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"absolute inset-0 z-10 min-h-35 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] outline-blue-100 w-full resize-none rounded-lg h-165 p-4"}
                 />
+
+                {tooltip && showSegmentTooltips && (
+                    <div
+                        className="pointer-events-none fixed z-50 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#101826] px-2 py-1 text-xs text-gray-900 dark:text-gray-100 shadow-lg"
+                        style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}
+                    >
+                        {tooltip.text}
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-function highlightJwt(value: string): React.ReactNode {
+function highlightJwt(
+    value: string,
+    showSegmentTooltips: boolean,
+    setTooltip: React.Dispatch<React.SetStateAction<{ text: string; x: number; y: number } | null>>
+): React.ReactNode {
     if (!value) {
         return <span className="text-transparent"> </span>;
     }
 
     const parts = value.split(".");
+    const labels = ["Header (Algorithm, Typ)", "Payload (Claims)", "Signature (Pruefung)", "Segment 4", "Segment 5"];
 
     return parts.map((part, index) => {
         const colorClasses = ["text-red-600 dark:text-red-400", "text-yellow-600 dark:text-yellow-400", "text-green-600 dark:text-green-400", "text-blue-600 dark:text-blue-400", "text-black dark:text-white"];
 
         return (
             <React.Fragment key={index}>
-                <span className={colorClasses[index]}>{part}</span>
+                <span
+                    className={(colorClasses[index] || "text-black dark:text-white") + (showSegmentTooltips ? " pointer-events-auto" : "")}
+                    onMouseEnter={(e) => {
+                        if (!showSegmentTooltips) return;
+                        setTooltip({
+                            text: labels[index] || `Segment ${index + 1}`,
+                            x: e.clientX,
+                            y: e.clientY,
+                        });
+                    }}
+                    onMouseMove={(e) => {
+                        if (!showSegmentTooltips) return;
+                        setTooltip((prev) => {
+                            if (!prev) return prev;
+                            return { ...prev, x: e.clientX, y: e.clientY };
+                        });
+                    }}
+                    onMouseLeave={() => {
+                        if (!showSegmentTooltips) return;
+                        setTooltip(null);
+                    }}
+                >
+                    {part}
+                </span>
                 {index < parts.length - 1 && <span className="text-purple-400">.</span>}
             </React.Fragment>
         );

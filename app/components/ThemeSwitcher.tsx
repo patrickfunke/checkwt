@@ -1,40 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ThemeSwitcher() {
-    const [theme, setTheme] = useState("system");
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
 
-    // Run only on client
     useEffect(() => {
-        const saved = localStorage.getItem("theme") || "system";
-        setTheme(saved);
+        setHasMounted(true);
+        const theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+            setIsDarkMode(true);
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
     }, []);
 
     useEffect(() => {
+        if (hasMounted) {
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+            }
+        }
+    }, [isDarkMode, hasMounted]);
 
-        const root = document.documentElement;
-        const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-        const applyTheme = () => {
-            const isDark =
-                theme === "dark" || (theme === "system" && media.matches);
-
-            root.classList.toggle("dark", isDark);
-        };
-
-        applyTheme();
-        localStorage.setItem("theme", theme);
-
-        media.addEventListener("change", applyTheme);
-        return () => media.removeEventListener("change", applyTheme);
-    }, [theme]);
-
-    // Prevent hydration mismatch
+    if (!hasMounted) {
+        return null; // Avoid rendering until the client has mounted
+    }
 
     return (
-        <button className="absolute top-10 right-10 cursor-pointer" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.2252 10.0845C14.54 9.95039 14.8559 10.244 14.7134 10.555C14.3379 11.3742 13.8066 12.1157 13.1463 12.7369C12.2739 13.5575 11.2056 14.1406 10.0435 14.4303C8.88133 14.7201 7.6643 14.7068 6.50878 14.3918C5.35325 14.0767 4.29789 13.4705 3.44363 12.631C2.58937 11.7915 1.9648 10.7469 1.62965 9.59707C1.2945 8.44722 1.25998 7.23061 1.52941 6.06361C1.79883 4.89661 2.36318 3.81825 3.16847 2.9317C3.76901 2.27056 4.48855 1.73258 5.28668 1.34413C5.59577 1.1937 5.88975 1.51373 5.74469 1.82539V1.82539C3.32126 7.032 8.59731 12.4835 13.8804 10.2315L14.2252 10.0845Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path></svg>
-        </button>
+        <label className="inline-flex items-center cursor-pointer">
+            <input
+                type="checkbox"
+                checked={isDarkMode}
+                onChange={() => setIsDarkMode((prev) => !prev)}
+                className="hidden"
+            />
+            <div className="w-10 h-6 flex items-center bg-gray-300 dark:bg-gray-100 rounded-full p-1">
+                <div
+                    className={`bg-white dark:bg-gray-900 w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                        isDarkMode ? "translate-x-4" : "translate-x-0"
+                    }`}
+                >
+                    {isDarkMode ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 p-1">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 p-1">
+                            <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M12 2v1M12 21v1M4.22 4.22l.7.7M18.08 18.08l.7.7M2 12h1M21 12h1M4.22 19.78l.7-.7M18.08 5.92l.7-.7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    )}
+                </div>
+            </div>
+        </label>
     );
 }

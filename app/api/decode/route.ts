@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import {decodeToken} from "@/app/api/decode/util.ts";
 import {decryptToken} from "@/app/api/decode/util_jwe.ts";
-import { getKeyById } from '../keys/[keyId]/util';
+import { getKeyById, getPrivateKeyById } from '../keys/[keyId]/util';
 
 const schema = z.object({
     token: z.string().min(1),
@@ -42,11 +42,19 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
+        const headerWithKid = {
+            ...decrypted.header,
+            kid: decrypted.header.kid ?? decrypted.keyKid,
+        };
+
         return NextResponse.json(
             {
-                header: decrypted.header,
+                header: headerWithKid,
+                type: 'JWE',
                 payload: decrypted.plaintext,
                 signatureValid: true, // TODO das macht iwie nicht so richtig Sinn bei JWEs
+                usedKey: headerWithKid.kid ? (getPrivateKeyById(headerWithKid.kid as string) || null) : null,
             },
             { status: 200 }
         );
@@ -64,6 +72,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 header: decoded.header,
+                type: 'JWT',
                 payload: decoded.payload,
                 signatureValid: decoded.signatureCheck,
                 usedKey: getKeyById(decoded.header.kid)

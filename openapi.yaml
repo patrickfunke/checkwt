@@ -84,3 +84,25 @@ components:
       properties:
         key:
           type: object
+    SupportedAlgorithms:
+      type: object
+      description: Lists of supported algorithms for JWT (signing) and JWE (key management and content encryption).
+      properties:
+        jwtSigningAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `alg` values for JWT signing/verification.
+          example: ["EdDSA", "ES256", "RS256", "PS256"]
+        jweKeyManagementAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `alg` (key management) values for JWE.
+          example: ["RSA-OAEP-256", "RSA-OAEP", "RSA1_5", "ECDH-ES", "ECDH-ES+A256KW", "A256KW"]
+        jweContentEncryptionAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `enc` (content encryption) values for JWE.
+          example: ["A256GCM", "A128GCM", "A128CBC-HS256"]

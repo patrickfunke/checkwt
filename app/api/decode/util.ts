@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { importJWK, jwtVerify, compactDecrypt, decodeProtectedHeader } from 'jose';
+import { getKeyById } from '../keys/[keyId]/util';
 
 /* First step: JWT decode */
 function parseToken(token: string) {
@@ -48,12 +49,7 @@ export function decodeHeader(headerB64: string) {
 function checkSignature(token: string) {
     const { header } = parseToken(token);
     const decoded = decodeHeader(header);
-    const jwksPath = path.resolve(process.cwd(), 'public', 'JWKS.json');
-    if (!fs.existsSync(jwksPath)) {
-        return Promise.resolve({ verified: false, reason: 'JWKS file not found' });
-    }
-    const jwks = JSON.parse(fs.readFileSync(jwksPath, 'utf8'));
-    const key = (jwks.keys || []).find((k: any) => k.kid === decoded.kid);
+    const key = getKeyById(decoded.kid);
     if (!key) {
         return Promise.resolve({ verified: false, reason: 'No matching key in JWKS' });
     }

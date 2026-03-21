@@ -73,6 +73,8 @@ paths:
                 $ref: '#/components/schemas/EncodeResponse'
         400:
           description: Bad request - invalid input
+        500:
+          description: Server error
 
 components:
   schemas:
@@ -113,6 +115,10 @@ components:
       description: |
         The request to create a JWT. Keys are generated automatically by the server
         (a new signing key is created and appended to the public JWKS.json).
+        Use `mode` in the body to select `jwt` (sign) or `jwe` (encrypt).
+        If `mode` is `jwe` and `recipientKey` is omitted, the server will generate an
+        encryption keypair, append the public key to `public/JWKS.json` and store the
+        private key in `private/JWKS.json` for decryption.
       properties:
         header:
           type: object
@@ -120,6 +126,16 @@ components:
         payload:
           type: object
           description: JWT claims/payload
+        mode:
+          type: string
+          description: Encoding mode; `jwt` (default) or `jwe` to produce an encrypted token
+          example: jwt
+        recipientKey:
+          type: object
+          description: |
+            (Optional) Recipient public key (JWK) to use for JWE encryption. If omitted,
+            the server will generate a new encryption keypair and publish the public key.
+          nullable: true
     EncodeResponse:
       type: object
       required:
@@ -127,3 +143,36 @@ components:
       properties:
         token:
           type: string
+    JWEEncodeResponse:
+      type: object
+      required:
+        - token
+        - recipientKid
+      properties:
+        token:
+          type: string
+        recipientKid:
+          type: string
+          description: Key ID of the recipient public key (useful to locate private key for decryption)
+    SupportedAlgorithms:
+      type: object
+      description: Lists of supported algorithms for JWT (signing) and JWE (key management and content encryption).
+      properties:
+        jwtSigningAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `alg` values for JWT signing/verification.
+          example: ["EdDSA", "ES256", "RS256", "PS256"]
+        jweKeyManagementAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `alg` (key management) values for JWE.
+          example: ["RSA-OAEP-256", "RSA-OAEP", "RSA1_5", "ECDH-ES", "ECDH-ES+A256KW", "A256KW"]
+        jweContentEncryptionAlgs:
+          type: array
+          items:
+            type: string
+          description: Supported `enc` (content encryption) values for JWE.
+          example: ["A256GCM", "A128GCM", "A128CBC-HS256"]
