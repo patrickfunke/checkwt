@@ -52,7 +52,7 @@ export default forwardRef(function JwtTextarea(
                     onScroll={handleScroll}
                     spellCheck={false}
                     placeholder="Paste JWT here"
-                    className={(errorMessage ? "border-red-500 " : "") +"jwt-input absolute inset-0 z-10 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] dark:bg-[#17181b] outline-blue-100 w-full resize-none rounded-lg p-4"}
+                    className={(errorMessage ? "border-red-500 " : "") +"dark:caret-white jwt-input absolute inset-0 z-10 overflow-auto bg-transparent leading-6 text-transparent caret-black outline-none placeholder:text-gray-400 font-mono border border-gray-300 dark:border-[#1e1e1e] dark:bg-[#17181b] outline-blue-100 w-full resize-none rounded-lg p-4"}
                     style={{ minHeight: 673 }}
                 />
 
