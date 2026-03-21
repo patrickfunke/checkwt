@@ -81,6 +81,7 @@ export default function Home() {
     }, [token])
 
     return (
+        <>
         <div className="w-full h-screen p-4 md:p-10 space-y-6">
             <div className="flex items-center justify-between gap-3">
                 <ThemeSwitcher/>
@@ -93,28 +94,26 @@ export default function Home() {
             </div>
             <div className="flex items-center mx-auto w-fit gap-4">
                 <img src="/favicon.ico" alt="favicon.ico"  className="w-10 rounded-xl"/>
-                <h1 className="font-bold text-4xl text-center uppercase">checkwtf</h1>
+                <h1 className="font-bold text-4xl text-center">CheckWTF - Finally understand JWT and JWE's</h1>
             </div>
-            <div className="text-sm text-center max-w-200 mx-auto">
+            <div className="text-sm text-center max-w-200 mx-auto opacity-60">
                 Decode, verify, and generate JSON Web Tokens, which are an open, industry standard <a href="https://datatracker.ietf.org/doc/html/rfc7519" target="_blank" className="underline">RFC-7519</a> method for representing claims securely between two parties.
             </div>
-            <div className="flex gap-4">
-                <div className="">
-                    Paste a JWT below that you'd like to decode, validate, and verify.
-                </div>
-                <div className="text-red-500">{errorMessage ?? ''}</div>
+            <div className="opacity-60 text-sm">
+                Paste a JWT below that you'd like to decode, validate, and verify.
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <div className="text-xl font-bold flex justify-between items-center">
-                            <div className="flex gap-2">
+                    <div className="font-bold flex justify-between items-center space-y-2">
+                        <div className="flex gap-2">
                             <div>JSON Web Token</div>
-                            {signatureValid !== null && <div className={(signatureValid === true ? "text-green-500" : "text-red-500") + " flex flex-row items-center gap-2 text-sm"}>
+                            {(signatureValid !== null && tokenType !== 'JWE') && <div className={(signatureValid === true ? "text-green-500 bg-green-500/10" : "text-red-500 bg-red-500/10") + " flex flex-row items-center gap-2 text-xs px-2 py-1 rounded-lg border"}>
                                 {signatureValid === true ? <img className="w-2 h-2 inline" src="/correct.png" alt="Valid" /> : <img className="w-2 h-2 inline" src="/wrong.png" alt="Invalid" />}
-                                {signatureValid === true ? "Signature is valid" : `Signature is invalid: ${signatureInvalidReason ?? ''}`}
+                                {signatureValid === true ? "Signature is valid" : `Signature is invalid`}
                             </div>
                             }
-                            {tokenType && <div className="text-sm italic ml-2">Detected: {tokenType}</div>}
+                            {tokenType && <div className="text-xs px-2 py-1 rounded-lg border bg-blue-500/10 text-blue-400">Detected: {tokenType}</div>}
+                                {errorMessage && <div className="text-red-500 text-xs px-2 py-1 rounded-lg border bg-red-500/10">{errorMessage ?? ''}</div>}
                         </div>
                         <div className="flex gap-2">
                             <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(token)}>
@@ -139,38 +138,62 @@ export default function Home() {
 
 
                 <div>
-                    <div className="text-xl font-bold flex justify-between items-center">
+                    <div className="font-bold flex justify-between items-center  space-y-2">
                         <div>Decoded Header</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                        <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(JSON.stringify(header))}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
-                        </Button>                    </div>
-                    <div className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                        </Button>
+                    </div>
+                    <div className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={header} />
                     </div>
+                    { header !== "" && <div className="mt-2 text-sm flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg w-full">
+                        <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
+                        <div>
+                            Tells you <span className="italic">what type of token</span> it is and <span className="italic">how it's signed</span> (like the method used to protect it).
+                        </div>
+                    </div>
+                    }
                 </div>
 
                 <div className="col-start-2">
-                    <div className="text-xl font-bold flex justify-between items-center">
+                    <div className="font-bold flex justify-between items-center  space-y-2">
                         <div>Decoded Payload</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                        <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(JSON.stringify(payload))}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
                         </Button>                    </div>
-                    <div className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                    <div className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={payload} />
                     </div>
+                    {payload !== "" && <div className="mt-2 text-sm w-full flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg">
+                        <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
+                        <div>
+                            Contains the <span className="italic">actual data</span> (for example, user ID or permissions).
+                        </div>
+                    </div>}
                 </div>
 
-                <div className="col-start-2">
-                    <div className="text-xl font-bold flex justify-between items-center">
+                <div className="col-start-2 mb-20">
+                    <div className="font-bold flex justify-between items-center space-y-2">
                         <div>Used Keys</div>
-                        <Button className="" title="Copy" onClick={() => copyTextToClipboard(token)}>
+                        <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(JSON.stringify(usedKey))}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 15H12C13.6569 15 15 13.6569 15 12V8C15 6.34315 13.6569 5 12 5H8C6.34315 5 5 6.34315 5 8V12C5 13.6569 6.34315 15 8 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path><path d="M8 0.25C9.33915 0.25 10.5138 0.952094 11.177 2.00819C11.4679 2.47151 11.0737 3 10.5266 3C10.2123 3 9.93488 2.81318 9.7352 2.57055C9.32304 2.06973 8.6994 1.75 8 1.75H4C2.75736 1.75 1.75 2.75736 1.75 4V8C1.75 8.69927 2.06986 9.32232 2.57062 9.73428C2.81326 9.93389 3 10.2113 3 10.5255C3 11.0726 2.47146 11.4669 2.00808 11.176C0.952101 10.513 0.25 9.33902 0.25 8V4C0.25 1.92893 1.92893 0.25 4 0.25H8Z" fill="currentColor"></path></svg>
                         </Button>                    </div>
-                    <div className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                    <div className="overflow-x-clip bg-gray-50 dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <PrettyPrint data={usedKey} />
                     </div>
+
+                    {usedKey !== "" && <div className="mt-2 text-sm w-full flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg">
+                        <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
+                        <div>
+                            A secret or private key is used to create a signature so you can <span className="italic">verify the token hasn't been tampered with</span>.
+                        </div>
+                    </div>
+
+                    }
                 </div>
             </div>
         </div>
+        </>
     );
 }

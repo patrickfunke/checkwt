@@ -95,12 +95,12 @@ export default function Encode() {
                 <div className="space-y-4">
                     <div>
                         <div className="text-xl font-bold mb-2">Header Options</div>
-                        <div className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] p-4 space-y-3">
+                        <div className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border border-gray-300 dark:border-[#1e1e1e] p-4 space-y-3">
                             <div className="space-y-1">
                                 <label className="text-sm font-medium" htmlFor="mode-select">Mode</label>
                                 <select
                                     id="mode-select"
-                                    className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#081327] px-3 py-2"
+                                    className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#272829] px-3 py-2"
                                     value={mode}
                                     onChange={(e) => setMode(e.target.value as "jwt" | "jwe")}
                                 >
@@ -114,7 +114,7 @@ export default function Encode() {
                                     <label className="text-sm font-medium" htmlFor="jwt-alg-select">alg</label>
                                     <select
                                         id="jwt-alg-select"
-                                        className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#081327] px-3 py-2"
+                                        className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#272829] px-3 py-2"
                                         value={jwtAlg}
                                         onChange={(e) => setJwtAlg(e.target.value as (typeof JWT_ALGS)[number])}
                                     >
@@ -160,7 +160,7 @@ export default function Encode() {
                     <div>
                         <div className="text-xl font-bold mb-2">Payload</div>
                         <textarea
-                            className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4 w-full font-mono resize-none"
+                            className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4 w-full font-mono resize-none"
                             value={payload}
                             onChange={(e) => setPayload(e.target.value)}
                             spellCheck={false}
@@ -168,7 +168,7 @@ export default function Encode() {
                         />
                     </div>
 
-                    <Button onClick={doEncodeCall} className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    <Button onClick={doEncodeCall} className="w-full rounded-full cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4">
                         {mode === "jwe" ? "Encode JWE" : "Encode JWT"}
                     </Button>
                 </div>
@@ -181,7 +181,7 @@ export default function Encode() {
 
                         </Button>
                     </div>
-                    <div className="bg-gray-50 dark:bg-[#0a1a3a] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                    <div className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
                         <textarea
                             className="w-full min-h-[420px] bg-transparent font-mono outline-none resize-none"
                             value={encoded}

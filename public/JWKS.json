@@ -40,6 +40,70 @@
       "kid": "b93a2ebc-7c1f-4ccc-905e-003d3dbb82de",
       "alg": "EdDSA",
       "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "AV6m_18KBHM7j0eldfzWJaXcrlypS9TiQsVDtPxyO5M",
+      "kty": "OKP",
+      "kid": "a8f2dcf1-36be-40f1-a095-abc2a924fe59",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "4fGk5Chkq3lXT3BhRYabCpIo1fHm1uwYnkPiPyqBzPo",
+      "kty": "OKP",
+      "kid": "9b58e4b2-7103-4147-8e3b-e724e6113e3c",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "1VMyIj0ZeiB2X880ULMaTIPB5uGyrMTHquuy5TjuHY4",
+      "kty": "OKP",
+      "kid": "9674a0b9-df81-4067-8e5f-61bb3e8e9e3d",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "KDTpfVPOSMnQphmfE1xf48eKt-X0tPJFUKsmgMkCc48",
+      "kty": "OKP",
+      "kid": "98073d60-0ea5-4c96-8fdd-323939f0c272",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "CyJQE7lRsGPUshnPMt2Lnr73DXBIbeb5gi9URPsKJ9c",
+      "kty": "OKP",
+      "kid": "7f6a81b7-e84f-412c-a73f-a554b4e0c243",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "AInR2VXmlDGnpaWw5Grk3xR4jiwKdyy8vpIjAhMyFas",
+      "kty": "OKP",
+      "kid": "b8564ae7-192b-4e6e-a274-a796aad5d806",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "nENZVtOkGkdOZdty2SQZAy2oJv6vuUmk4lw3bMGsmiU",
+      "kty": "OKP",
+      "kid": "fd62cd2e-6267-499b-83a4-014ee32d222f",
+      "alg": "EdDSA",
+      "use": "sig"
+    },
+    {
+      "crv": "Ed25519",
+      "x": "E61N8r18X0k8HkRU-oJ00aPw3FKDTIVKfp73Rd68RYs",
+      "kty": "OKP",
+      "kid": "81d974af-a92d-4138-976a-79db50ecc726",
+      "alg": "EdDSA",
+      "use": "sig"
     }
   ]
 }
