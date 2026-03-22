@@ -36,11 +36,11 @@ export default function Home() {
                 <button
                     onClick={() => setTab("encode-jwt")}
                     className={`flex-1 rounded-md py-1 text-sm font-medium transition-all ${tab === "encode-jwt" ? "bg-background text-foreground shadow-sm dark:bg-input/30 dark:border dark:border-input" : "text-muted-foreground hover:text-foreground"}`}
-                >JWT Encoder</button>
+                >Signed JWT</button>
                 <button
                     onClick={() => setTab("encode-jwe")}
                     className={`flex-1 rounded-md py-1 text-sm font-medium transition-all ${tab === "encode-jwe" ? "bg-background text-foreground shadow-sm dark:bg-input/30 dark:border dark:border-input" : "text-muted-foreground hover:text-foreground"}`}
-                >JWE Encoder</button>
+                >Encrypted JWT</button>
             </div>
             <div className={tab !== "decode" ? "hidden" : ""}>
                 <DecoderForm />

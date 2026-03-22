@@ -102,7 +102,7 @@ export default function JWEEncoderForm() {
                 <TextAreaWrapper title="Step 2 — Encrypt: Outer JWE" deleteEnabled={false} copyEnabled={false} formContentText={""}>
                     <div className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border border-gray-300 dark:border-[#1e1e1e] p-4 space-y-3">
                         <div className="space-y-1">
-                            <label className="text-sm font-medium" htmlFor="jwe-alg-select">Key Wrap Algorithm (alg)</label>
+                            <label className="text-sm font-medium" htmlFor="jwe-alg-select">Key Wrap Algorithm (alg Header)</label>
                             <select
                                 id="jwe-alg-select"
                                 className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#272829] px-3 py-2"
@@ -115,7 +115,7 @@ export default function JWEEncoderForm() {
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-sm font-medium" htmlFor="jwe-enc-select">Content Encryption (enc)</label>
+                            <label className="text-sm font-medium" htmlFor="jwe-enc-select">Content Encryption Algorithm (enc Header)</label>
                             <select
                                 id="jwe-enc-select"
                                 className="w-full rounded-md border border-gray-300 dark:border-[#1e1e1e] bg-white dark:bg-[#272829] px-3 py-2"
@@ -130,7 +130,7 @@ export default function JWEEncoderForm() {
                     </div>
                 </TextAreaWrapper>
 
-                <TextAreaWrapper title="Payload" deleteEnabled={false} formContentText={payload}>
+                <TextAreaWrapper title="Inner JWT Payload" deleteEnabled={false} formContentText={payload}>
                     <textarea
                         className={`bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border min-h-48 p-4 w-full font-mono resize-none ${payloadError ? "border-red-500" : "border-gray-300 dark:border-[#1e1e1e]"}`}
                         value={payload}

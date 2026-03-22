@@ -39,6 +39,89 @@ function StepIcon({ status }: { status: StepStatus }) {
     );
 }
 
+function asObj(val: unknown): Record<string, unknown> | null {
+    if (!val) return null;
+    if (typeof val === "object") return val as Record<string, unknown>;
+    try { return JSON.parse(String(val)); } catch { return null; }
+}
+
+function InfoRow({ label, value, dimmed }: { label: string; value: string; dimmed?: boolean }) {
+    return (
+        <div className={`flex gap-3 text-sm ${dimmed ? "opacity-40" : ""}`}>
+            <span className="text-muted-foreground w-36 flex-shrink-0">{label}</span>
+            <span className="font-medium">{value}</span>
+        </div>
+    );
+}
+
+function InfoCard({ token, tokenType, header, outerHeader, payload }: {
+    token: string;
+    tokenType: string;
+    header: unknown;
+    outerHeader: unknown;
+    payload: unknown;
+}) {
+    const parts = token ? token.split(".") : [];
+    const headerObj = asObj(header);
+    const hasToken = token !== "";
+
+    // Serialization format
+    const format = !hasToken ? "—"
+        : parts.length === 5 ? "JWE Compact Serialization"
+        : parts.length === 3 ? "JWS Compact Serialization"
+        : "Unknown";
+
+    // Token Type analysis
+    let tokenTypeLabel = "—";
+    if (hasToken) {
+        if (parts.length === 5) {
+            tokenTypeLabel = "Encrypted JSON Web Token (JWT) using JSON Web Encryption (JWE)";
+        } else if (parts.length === 3) {
+            const alg = headerObj?.alg as string | undefined;
+            const sig = parts[2];
+            if (alg === "none" || !sig) {
+                tokenTypeLabel = "Unsigned JSON Web Token (JWT)";
+            } else {
+                tokenTypeLabel = "Signed JSON Web Token (JWT) using JSON Web Signature (JWS)";
+            }
+        }
+    }
+
+    // Payload Type analysis
+    let payloadTypeLabel = "—";
+    if (hasToken) {
+        if (tokenType === "JWT-in-JWE") {
+            payloadTypeLabel = "Signed JSON Web Token (JWT) using JSON Web Signature (JWS)";
+        } else if (tokenType === "JWT") {
+            payloadTypeLabel = "Plain Text JSON";
+        } else if (tokenType === "JWE") {
+            const payloadStr = typeof payload === "string" ? payload.trim() : "";
+            if (payloadStr) {
+                const pp = payloadStr.split(".");
+                if (pp.length === 5) {
+                    payloadTypeLabel = "Encrypted JSON Web Token (JWT) using JSON Web Encryption (JWE)";
+                } else if (pp.length === 3 && pp[2]) {
+                    payloadTypeLabel = "Signed JSON Web Token (JWT) using JSON Web Signature (JWS)";
+                } else {
+                    try { JSON.parse(payloadStr); payloadTypeLabel = "Plain Text JSON"; }
+                    catch { payloadTypeLabel = "Unknown"; }
+                }
+            } else {
+                payloadTypeLabel = "?";
+            }
+        }
+    }
+
+    return (
+        <div className="rounded-lg border border-gray-300 dark:border-[#1e1e1e] bg-gray-50 dark:bg-[#1e1e1e] p-4 flex flex-col gap-2">
+            <div className="text-xs font-semibold uppercase tracking-wider opacity-50 mb-1">Analysis</div>
+            <InfoRow label="Format" value={format} dimmed={!hasToken} />
+            <InfoRow label="Token Type" value={tokenTypeLabel} dimmed={!hasToken} />
+            <InfoRow label="Payload Type" value={payloadTypeLabel} dimmed={!hasToken} />
+        </div>
+    );
+}
+
 function StepsCard({ steps }: { steps: StepItem[] }) {
     return (
         <div className="rounded-lg border border-gray-300 dark:border-[#1e1e1e] bg-gray-50 dark:bg-[#1e1e1e] p-4 flex flex-col gap-2.5">
@@ -193,13 +276,7 @@ export default function DecoderForm() {
     const expClaim = typeof parsedPayloadObj?.exp === "number" ? parsedPayloadObj.exp : null;
 
     const steps: StepItem[] = [
-        // Step 1: Token type detection
-        {
-            label: tokenType ? `${tokenType} detected` : "Token type",
-            status: !hasToken ? "idle" : tokenType ? "success" : "failed",
-            detail: !hasToken ? undefined : !tokenType && errorMessage ? errorMessage : undefined,
-        },
-        // Step 2: Base64 decode
+        // Step 1: Base64 decode
         {
             label: "Base64url decode",
             status: !hasToken ? "idle" : hasDecoded ? "success" : tokenType ? "failed" : "failed",
@@ -251,9 +328,10 @@ export default function DecoderForm() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 {/* LEFT: steps + token input + legend */}
                 <div className="flex flex-col gap-4">
+                <InfoCard token={token} tokenType={tokenType} header={header} outerHeader={outerHeader} payload={payload} />
                 <StepsCard steps={steps} />
                 <TextAreaWrapper
-                    title="JSON Web Token"
+                    title="Serialized Token"
                     messages={[]}
                     showDescription={false}
                     onClear={() => {
@@ -272,7 +350,6 @@ export default function DecoderForm() {
                         errorMessage={errorMessage}
                         value={value}
                         onValueChange={(val: string) => setValue(val)}
-                        showSegmentTooltips={signatureValid === undefined || signatureValid === true}
                     />
                 </TextAreaWrapper>
                 {token && <TokenLegend partCount={token.split(".").length} />}
@@ -284,7 +361,7 @@ export default function DecoderForm() {
                     {tokenType === 'JWT-in-JWE' && (
                         <>
                             <TextAreaWrapper
-                                title="JWE Header"
+                                title="Header (JWE)"
                                 deleteEnabled={false}
                                 description="Plain text header — how the payload was encrypted and which key was used to encrypt the content encryption key (CEK)."
                                 showDescription={outerHeader !== ""}
@@ -296,7 +373,7 @@ export default function DecoderForm() {
                             </TextAreaWrapper>
 
                             <TextAreaWrapper
-                                title="Key Encryption Key"
+                                title="Key Encryption Key (JWE)"
                                 deleteEnabled={false}
                                 description="Secret used to encrypt the content encryption key (CEK), referenced by the JWE header."
                                 showDescription={outerUsedKey !== ""}
@@ -310,7 +387,7 @@ export default function DecoderForm() {
                     )}
 
                     <TextAreaWrapper
-                        title={tokenType === 'JWT-in-JWE' ? "Inner JWT Header" : "JWT Header"}
+                        title={tokenType === 'JWT-in-JWE' ? "Inner Header (JWS)" : "Header (JWS)"}
                         deleteEnabled={false}
                         description={`How payload was signed and which key was used to sign it.`}
                         showDescription={header !== ""}
@@ -322,7 +399,7 @@ export default function DecoderForm() {
                     </TextAreaWrapper>
 
                     <TextAreaWrapper
-                        title={tokenType === 'JWT-in-JWE' ? "Inner JWT Payload" : "JWT Payload"}
+                        title={tokenType === 'JWT-in-JWE' ? "Inner Payload (JWS)" : "Payload (JWS)"}
                         deleteEnabled={false}
                         description={`Contains the actual data, like IDs or permissions.`}
                         showDescription={payload !== ""}
