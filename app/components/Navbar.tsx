@@ -1,10 +1,4 @@
-"use client"
-
-import Link from "next/link"
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-
 export default function Navbar({selected}: {selected: string}) {
-    console.log("Selected:", selected);
     return (
         <>
         <div className="shadow-md flex flex-row items-center w-full h-min-48 bg-gray-100 dark:bg-[#1e1e1e] rounded-b-lg border border-gray-300 dark:border-[#1e1e1e] p-4">

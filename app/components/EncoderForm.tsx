@@ -16,21 +16,42 @@ export default function EncoderForm() {
     const [payload, setPayload] = useState('{"sub": "1234567890",\n  "name": "John Doe"}');
     const [encoded, setEncoded] = useState('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [payloadError, setPayloadError] = useState(false);
 
-    async function copyTextToClipboard(text: string) {
+    function base64urlDecode(str: string): string {
+        const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4);
+        return atob(padded);
+    }
+
+    function parsePayload(text: string): object | null {
+        const trimmed = text.trim();
         try {
-            await navigator.clipboard.writeText(text);
-        } catch (err) {
-            console.error("Failed to copy: ", err);
+            return JSON.parse(trimmed);
+        } catch {
+            // fall through
+        }
+        // Full JWT/JWE — extract payload segment (index 1)
+        const parts = trimmed.split('.');
+        if (parts.length === 3 || parts.length === 5) {
+            try {
+                return JSON.parse(base64urlDecode(parts[1]));
+            } catch {
+                // fall through
+            }
+        }
+        // Bare base64url or base64 string
+        try {
+            return JSON.parse(base64urlDecode(trimmed));
+        } catch {
+            return null;
         }
     }
 
     const doEncodeCall = async () => {
-        let parsedPayload;
-        try {
-            parsedPayload = JSON.parse(payload);
-        } catch (e) {
-            setErrorMessage("Payload is not valid JSON");
+        const parsedPayload = parsePayload(payload);
+        if (!parsedPayload) {
+            setErrorMessage("Payload must be valid JSON or a base64-encoded JSON string");
             setEncoded("");
             return;
         }
@@ -151,19 +172,14 @@ export default function EncoderForm() {
                             formContentText={payload}
                         >
                             <textarea
-                                className="bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4 w-full font-mono resize-none"
+                                className={`bg-gray-50 dark:bg-[#1e1e1e] rounded-lg border min-h-48 p-4 w-full font-mono resize-none ${payloadError ? "border-red-500" : "border-gray-300 dark:border-[#1e1e1e]"}`}
                                 value={payload}
-                                onChange={(e) => setPayload(e.target.value)}
+                                onChange={(e) => {
+                                    setPayload(e.target.value);
+                                    setPayloadError(parsePayload(e.target.value) === null && e.target.value.trim() !== "");
+                                }}
                                 spellCheck={false}
                                 aria-label="Editable Payload JSON"
-                                onBlur={() => {
-                                try {
-                                    const parsed = JSON.parse(payload);
-                                    setPayload(JSON.stringify(parsed, null, 2));
-                                } catch (e) {
-                                    // Invalid JSON, don't format
-                                }
-                            }}
                             />
                         </TextAreaWrapper>
                     </div>

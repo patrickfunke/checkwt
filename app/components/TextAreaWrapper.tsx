@@ -52,7 +52,18 @@ export default function TextAreaWrapper({
         if (textToCopy == null) return;
 
         try {
-            await navigator.clipboard.writeText(textToCopy);
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(textToCopy);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = textToCopy;
+                el.style.position = 'fixed';
+                el.style.opacity = '0';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
             setCopied(true);
             setTimeout(() => setCopied(false), 1000);
         } catch (err) {

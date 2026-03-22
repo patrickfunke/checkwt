@@ -33,7 +33,7 @@ export async function POST(req: Request) {
                 }
             }
 
-            const hdr = { ...validHeader };
+            const hdr = { ...validHeader, ...(publicJwk?.kid ? { kid: publicJwk.kid } : {}) };
             const token = await generateJWE(hdr, validPayload, recipientKey);
 
             return new Response(JSON.stringify({ token }), { status: 200, headers: { 'Content-Type': 'application/json' } });
