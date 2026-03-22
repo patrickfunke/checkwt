@@ -43,18 +43,40 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const headerWithKid = {
+        const outerHeader = {
             ...decrypted.header,
             kid: decrypted.header.kid ?? decrypted.keyKid,
         };
+        const outerUsedKey = outerHeader.kid ? (await getPrivateKeyById(outerHeader.kid as string) || null) : null;
+
+        // Check if the plaintext is itself a JWT (nested JWT-in-JWE per RFC 7519 §6)
+        const innerParts = decrypted.plaintext.trim().split('.');
+        if (innerParts.length === 3) {
+            try {
+                const inner = await decodeToken(decrypted.plaintext.trim());
+                const innerUsedKey = inner.header.kid ? await getKeyById(inner.header.kid as string) : null;
+                return NextResponse.json({
+                    type: 'JWT-in-JWE',
+                    outer: { header: outerHeader, usedKey: outerUsedKey },
+                    inner: {
+                        header: inner.header,
+                        payload: inner.payload,
+                        signatureValid: inner.signatureCheck,
+                        usedKey: innerUsedKey,
+                    },
+                }, { status: 200 });
+            } catch {
+                // plaintext looked like a JWT but couldn't be decoded — fall through to plain JWE
+            }
+        }
 
         return NextResponse.json(
             {
-                header: headerWithKid,
+                header: outerHeader,
                 type: 'JWE',
                 payload: decrypted.plaintext,
-                signatureValid: true, // TODO das macht iwie nicht so richtig Sinn bei JWEs
-                usedKey: headerWithKid.kid ? (await getPrivateKeyById(headerWithKid.kid as string) || null) : null,
+                signatureValid: { verified: true },
+                usedKey: outerUsedKey,
             },
             { status: 200 }
         );

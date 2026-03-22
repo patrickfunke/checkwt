@@ -1,45 +1,36 @@
-import { parseInput, validateHeader, validatePayload, generateSignKey, generateJWT } from './util';
-import { generateEncKey, generateJWE } from './util_jwe';
+import { validateHeader, validatePayload, generateSignKey, generateJWT } from './util';
+import { generateEncKey, generateNestedJWE } from './util_jwe';
 import { saveKey } from '@/lib/jwks-store';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { header, payload } = parseInput(body);
-        const validHeader = validateHeader(header);
-        const validPayload = validatePayload(payload);
         const mode = (body.mode || 'jwt').toString().toLowerCase();
 
-        if (mode === 'jwe') {
-            // if caller provided a recipient public key, use it; otherwise generate one and persist
-            const recipient = (body.recipientKey) ? body.recipientKey : null;
+        if (mode === 'jwt-in-jwe') {
+            const innerHeader = validateHeader(body.innerHeader || {});
+            const outerHeader = validateHeader(body.outerHeader || {});
+            const validPayload = validatePayload(body.payload);
 
-            let recipientKey = recipient;
-            let publicJwk: any = null;
-            let privateJwk: any = null;
+            // Step 1: sign the inner JWT
+            const { privateKey: signPrivKey, publicJwk: signPubJwk } = await generateSignKey(innerHeader.alg || 'EdDSA');
+            await saveKey(signPubJwk, 'public');
+            const innerJwtHeader = { ...innerHeader, alg: signPubJwk.alg, kid: signPubJwk.kid };
+            const innerJwt = await generateJWT(innerJwtHeader, validPayload, signPrivKey);
 
-            if (!recipientKey) {
-                const { privateKey, publicJwk: pub, privateJwk: priv } = await generateEncKey(validHeader.alg || 'RSA-OAEP-256');
-                publicJwk = pub;
-                privateJwk = priv;
-                recipientKey = publicJwk;
+            // Step 2: encrypt the inner JWT as the JWE plaintext
+            const { publicJwk: encPubJwk, privateJwk: encPrivJwk } = await generateEncKey(outerHeader.alg || 'RSA-OAEP-256');
+            await saveKey(encPubJwk, 'public');
+            await saveKey(encPrivJwk, 'private');
+            const outerJweHeader = { ...outerHeader, kid: encPubJwk.kid };
+            const token = await generateNestedJWE(innerJwt, outerJweHeader, encPubJwk);
 
-                if (publicJwk) {
-                    await saveKey(publicJwk, 'public');
-                }
-
-                if (privateJwk) {
-                    await saveKey(privateJwk, 'private');
-                }
-            }
-
-            const hdr = { ...validHeader, ...(publicJwk?.kid ? { kid: publicJwk.kid } : {}) };
-            const token = await generateJWE(hdr, validPayload, recipientKey);
-
-            return new Response(JSON.stringify({ token }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ token, innerJwt }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // default: jwt
+        // default: plain JWT
+        const validHeader = validateHeader(body.header || {});
+        const validPayload = validatePayload(body.payload);
         const { privateKey, publicJwk } = await generateSignKey(validHeader.alg || 'EdDSA');
         await saveKey(publicJwk, 'public');
         const hdr = { ...validHeader, alg: publicJwk.alg, kid: publicJwk.kid };

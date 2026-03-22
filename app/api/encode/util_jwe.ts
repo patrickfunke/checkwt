@@ -1,4 +1,4 @@
-import { generateKeyPair, exportJWK, EncryptJWT } from 'jose';
+import { generateKeyPair, generateSecret, exportJWK, EncryptJWT, CompactEncrypt, importJWK } from 'jose';
 import { randomUUID } from 'crypto';
 
 export function parseInput(input: any) {
@@ -17,11 +17,22 @@ export function validatePayload(payload: any) {
 	return payload;
 }
 
+const SYMMETRIC_KEY_WRAP_ALGS = ['A128KW', 'A192KW', 'A256KW', 'A128GCMKW', 'A192GCMKW', 'A256GCMKW'];
+
 export async function generateEncKey(alg = 'RSA-OAEP-256') {
+	const kid = randomUUID();
+	if (SYMMETRIC_KEY_WRAP_ALGS.includes(alg)) {
+		const secretKey = await generateSecret(alg as any, { extractable: true });
+		const jwk: any = await exportJWK(secretKey);
+		jwk.kid = kid;
+		jwk.alg = alg;
+		jwk.use = 'enc';
+		// Symmetric: same key is used for both wrap and unwrap
+		return { privateKey: secretKey, publicJwk: jwk, privateJwk: jwk };
+	}
 	const { publicKey, privateKey } = await generateKeyPair(alg as any, { extractable: true });
 	const publicJwk: any = await exportJWK(publicKey);
 	const privateJwk: any = await exportJWK(privateKey);
-	const kid = randomUUID();
 	publicJwk.kid = kid;
 	privateJwk.kid = kid;
 	publicJwk.alg = alg;
@@ -49,6 +60,18 @@ if (Object.prototype.hasOwnProperty.call(payloadObj, 'iat')) delete payloadObj.i
 
 	const token = await encryptor.encrypt(recipientKey as any);
 	return token;
+}
+
+export async function generateNestedJWE(
+	jwtString: string,
+	header: { alg: string; enc: string; kid?: string; [k: string]: unknown },
+	recipientJwk: any,
+): Promise<string> {
+	const plaintext = new TextEncoder().encode(jwtString);
+	const recipientKey = await importJWK(recipientJwk, recipientJwk.alg || header.alg);
+	return new CompactEncrypt(plaintext)
+		.setProtectedHeader({ ...header, cty: 'JWT' })
+		.encrypt(recipientKey as any);
 }
 
 export { };

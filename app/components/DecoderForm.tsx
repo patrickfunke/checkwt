@@ -13,6 +13,9 @@ export default function DecoderForm() {
     const [tokenType, setTokenType] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [value, setValue] = useState<string>("");
+    // JWT-in-JWE outer layer
+    const [outerHeader, setOuterHeader] = useState("");
+    const [outerUsedKey, setOuterUsedKey] = useState("");
 
     const jwtRef = useRef<HTMLTextAreaElement>(null);
 
@@ -24,6 +27,8 @@ export default function DecoderForm() {
         setSignatureValid(null);
         setSignatureInvalidReason(null);
         setTokenType("");
+        setOuterHeader("");
+        setOuterUsedKey("");
     }
 
     const setError = (error: string) => {
@@ -51,14 +56,30 @@ export default function DecoderForm() {
                 return;
             }
             setErrorMessage(null);
-            const { header, payload, signatureValid, usedKey, type } = await res.json();
-            const { verified, reason } = await signatureValid;
-            setHeader(header ?? "");
-            setPayload(payload ?? "");
-            setSignatureValid(verified);
-            setSignatureInvalidReason(reason);
-            setUsedKey(usedKey ?? "");
-            setTokenType(type ?? "");
+            const data = await res.json();
+
+            if (data.type === 'JWT-in-JWE') {
+                setTokenType('JWT-in-JWE');
+                setOuterHeader(data.outer?.header ?? "");
+                setOuterUsedKey(data.outer?.usedKey ?? "");
+                setHeader(data.inner?.header ?? "");
+                setPayload(data.inner?.payload ?? "");
+                const sv = data.inner?.signatureValid;
+                setSignatureValid(sv?.verified ?? null);
+                setSignatureInvalidReason(sv?.reason ?? null);
+                setUsedKey(data.inner?.usedKey ?? "");
+            } else {
+                const { header, payload, signatureValid, usedKey, type } = data;
+                const { verified, reason } = signatureValid ?? {};
+                setHeader(header ?? "");
+                setPayload(payload ?? "");
+                setSignatureValid(verified ?? null);
+                setSignatureInvalidReason(reason ?? null);
+                setUsedKey(usedKey ?? "");
+                setTokenType(type ?? "");
+                setOuterHeader("");
+                setOuterUsedKey("");
+            }
         } catch (err) {
             setError("Failed to parse token.");
         }
@@ -67,6 +88,7 @@ export default function DecoderForm() {
     useEffect(() => {
         handleDecode();
     }, [token]);
+
     return (
         <>
             <div className="opacity-60 text-sm mb-2">
@@ -77,12 +99,22 @@ export default function DecoderForm() {
                     title="JSON Web Token"
                     messages={[
                         ...(errorMessage ? [{ type: "error" as const, message: errorMessage }] : []),
-                        ...(tokenType !== 'JWE' && signatureValid === true ? [{
+                        ...(tokenType === 'JWT-in-JWE' && signatureValid === true ? [{
+                            type: "success" as const,
+                            message: `Inner JWT signature is valid`,
+                            icon: `/correct.png`
+                        }] : []),
+                        ...(tokenType === 'JWT-in-JWE' && signatureValid === false ? [{
+                            type: "error" as const,
+                            message: `Inner JWT signature is invalid`,
+                            icon: `/wrong.png`
+                        }] : []),
+                        ...(tokenType !== 'JWE' && tokenType !== 'JWT-in-JWE' && signatureValid === true ? [{
                             type: "success" as const,
                             message: `Signature is valid`,
                             icon: `/correct.png`
                         }] : []),
-                        ...(tokenType !== 'JWE' && signatureValid === false ? [{
+                        ...(tokenType !== 'JWE' && tokenType !== 'JWT-in-JWE' && signatureValid === false ? [{
                             type: "error" as const,
                             message: `Signature is invalid`,
                             icon: `/wrong.png`
@@ -110,8 +142,37 @@ export default function DecoderForm() {
                     />
                 </TextAreaWrapper>
 
+                {/* Outer JWE layer (JWT-in-JWE only) */}
+                {tokenType === 'JWT-in-JWE' && (
+                    <>
+                        <TextAreaWrapper
+                            title="Outer JWE Header"
+                            deleteEnabled={false}
+                            description="The encryption header — how the inner JWT was encrypted."
+                            showDescription={outerHeader !== ""}
+                            formContentText={outerHeader}
+                        >
+                            <div className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-24 p-4">
+                                <PrettyPrint data={outerHeader} />
+                            </div>
+                        </TextAreaWrapper>
+
+                        <TextAreaWrapper
+                            title="Decryption Key"
+                            deleteEnabled={false}
+                            description="The private key used to decrypt the JWE."
+                            showDescription={outerUsedKey !== ""}
+                            formContentText={outerUsedKey}
+                        >
+                            <div className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-24 p-4">
+                                <PrettyPrint data={outerUsedKey} />
+                            </div>
+                        </TextAreaWrapper>
+                    </>
+                )}
+
                 <TextAreaWrapper
-                    title="Decoded Header"
+                    title={tokenType === 'JWT-in-JWE' ? "Inner JWT Header" : "Decoded Header"}
                     deleteEnabled={false}
                     description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
                     showDescription={header !== ""}
@@ -123,7 +184,7 @@ export default function DecoderForm() {
                 </TextAreaWrapper>
 
                 <TextAreaWrapper
-                    title="Decoded Payload"
+                    title={tokenType === 'JWT-in-JWE' ? "Inner JWT Payload" : "Decoded Payload"}
                     deleteEnabled={false}
                     description={`Contains the actual data (for example, user ID or permissions).`}
                     showDescription={payload !== ""}
@@ -142,7 +203,7 @@ export default function DecoderForm() {
 
                 <div className="mb-20">
                     <TextAreaWrapper
-                        title="Used Keys"
+                        title={tokenType === 'JWT-in-JWE' ? "Signing Key" : "Used Keys"}
                         deleteEnabled={false}
                         description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
                         showDescription={usedKey !== ""}
