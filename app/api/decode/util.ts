@@ -52,7 +52,15 @@ async function checkSignature(token: string) {
         return { verified: false, reason: 'No matching key in JWKS' };
     }
     const imported = await importJWK(key as any, key.alg || 'EdDSA');
-    await jwtVerify(token, imported);
+    try {
+        await jwtVerify(token, imported);
+    } catch (e: any) {
+        // JWTExpired means the signature is cryptographically valid — exp is checked separately
+        if (e?.code === 'ERR_JWT_EXPIRED') {
+            return { verified: true };
+        }
+        throw e;
+    }
     return { verified: true };
 }
 

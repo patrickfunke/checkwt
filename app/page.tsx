@@ -1,41 +1,56 @@
+"use client";
+
 import Link from "next/link";
+import ThemeSwitcher from "@/app/components/ThemeSwitcher.tsx";
+import DecoderForm from "./components/DecoderForm";
+import JWTEncoderForm from "./components/JWTEncoderForm";
+import JWEEncoderForm from "./components/JWEEncoderForm";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-      <div className="w-full max-w-xl mx-auto px-4 py-8 flex flex-col gap-6">
-        <div>
-            <Link
-                href="/home"
-                className="inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
-            >
-                Zu Home
-            </Link>
-        </div>
+    const [tab, setTab] = useState<"decode" | "encode-jwt" | "encode-jwe">("decode");
 
-        <div className="font-bold text-3xl">Was ist JWT (JSON Web Token)?</div>
-        <div className="text-sm">Ein Standard (RFC 7519) für kompakte, URL-sichere Tokens</div>
-        <div className="text-sm flex gap-2 items-start bg-yellow-500/10 px-4 py-3 border border-yellow-300 rounded-lg w-full">
-            <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6 mt-0.5 shrink-0"/>
-            <div><span className="font-bold">Wichtig: </span>
-                Signiert, aber nicht verschlüsselt — Inhalt kann von jedem gelesen werden (Base64 codiert)</div>
-        </div>
-        <div className="font-bold">Für was?</div>
-        <div className="text-sm">Login / Session-Management, API-Authentifizierung</div>
-        <div className="font-bold">Wie ist der Aufbau?</div>
-        <div className="w-full">
-            <img src="/jwt_structure.png" alt="structure image" className="w-full h-auto"/>
-        </div>
-
-        <div className="font-bold text-3xl">Was ist JWE (JSON Web Encryption)?</div>
-        <div className="text-sm">Standard für verschlüsselte Tokens (Teil der JOSE-Spezifikation)</div>
-        <div className="text-sm flex gap-2 items-start bg-yellow-500/10 px-4 py-3 border border-yellow-300 rounded-lg w-full">
-            <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6 mt-0.5 shrink-0"/>
-            <div><span className="font-bold">Unterschied zu JWT: </span>
-                JWT = meist JWS (signiert) — JWE = verschlüsselt
+    return (
+        <div className="w-full p-4 md:p-10 space-y-6">
+            <div className="flex items-center justify-between gap-3">
+                <ThemeSwitcher />
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="outline">
+                        <Link href="/docs">API Docs</Link>
+                    </Button>
+                </div>
+            </div>
+            <div className="flex items-center mx-auto w-fit gap-4">
+                <img src="/favicon.ico" alt="favicon.ico" className="w-10 rounded-xl" />
+                <h1 className="font-bold text-4xl text-center">CheckWTF - JWT & JWE Debugger</h1>
+            </div>
+            <div className="opacity-60 text-sm mx-auto w-fit max-w-200 text-center">
+                Decode, verify, and generate JSON Web Tokens, which are an open, industry standard <a href="https://datatracker.ietf.org/doc/html/rfc7519" target="_blank" className="underline">RFC-7519</a> method for representing claims securely between two parties.
+            </div>
+            <div className="flex w-full max-w-sm mx-auto rounded-lg bg-muted p-[3px] gap-[3px]">
+                <button
+                    onClick={() => setTab("decode")}
+                    className={`flex-1 rounded-md py-1 text-sm font-medium transition-all ${tab === "decode" ? "bg-background text-foreground shadow-sm dark:bg-input/30 dark:border dark:border-input" : "text-muted-foreground hover:text-foreground"}`}
+                >Decoder</button>
+                <button
+                    onClick={() => setTab("encode-jwt")}
+                    className={`flex-1 rounded-md py-1 text-sm font-medium transition-all ${tab === "encode-jwt" ? "bg-background text-foreground shadow-sm dark:bg-input/30 dark:border dark:border-input" : "text-muted-foreground hover:text-foreground"}`}
+                >JWT Encoder</button>
+                <button
+                    onClick={() => setTab("encode-jwe")}
+                    className={`flex-1 rounded-md py-1 text-sm font-medium transition-all ${tab === "encode-jwe" ? "bg-background text-foreground shadow-sm dark:bg-input/30 dark:border dark:border-input" : "text-muted-foreground hover:text-foreground"}`}
+                >JWE Encoder</button>
+            </div>
+            <div className={tab !== "decode" ? "hidden" : ""}>
+                <DecoderForm />
+            </div>
+            <div className={tab !== "encode-jwt" ? "hidden" : ""}>
+                <JWTEncoderForm />
+            </div>
+            <div className={tab !== "encode-jwe" ? "hidden" : ""}>
+                <JWEEncoderForm />
             </div>
         </div>
-        <div className="font-bold">Für was?</div>
-        <div className="text-sm">Schutz sensibler Daten durch Verschlüsselung, Übertragung sensibler Informationen, sichere Kommunikation zwischen Services</div>
-    </div>
-  );
+    );
 }

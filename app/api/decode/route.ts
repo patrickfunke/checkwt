@@ -8,6 +8,17 @@ const schema = z.object({
     token: z.string().min(1),
 });
 
+const SAFE_KEY_FIELDS = new Set(['kty', 'kid', 'alg', 'use', 'crv']);
+
+function sanitizeKey(key: Record<string, unknown> | null): Record<string, unknown> | null {
+    if (!key) return null;
+    const result: Record<string, unknown> = {};
+    for (const field of Object.keys(key)) {
+        result[field] = SAFE_KEY_FIELDS.has(field) ? key[field] : '...';
+    }
+    return result;
+}
+
 export async function POST(request: NextRequest) {
 
     let json;
@@ -57,12 +68,12 @@ export async function POST(request: NextRequest) {
                 const innerUsedKey = inner.header.kid ? await getKeyById(inner.header.kid as string) : null;
                 return NextResponse.json({
                     type: 'JWT-in-JWE',
-                    outer: { header: outerHeader, usedKey: outerUsedKey },
+                    outer: { header: outerHeader, usedKey: sanitizeKey(outerUsedKey) },
                     inner: {
                         header: inner.header,
                         payload: inner.payload,
                         signatureValid: inner.signatureCheck,
-                        usedKey: innerUsedKey,
+                        usedKey: sanitizeKey(innerUsedKey),
                     },
                 }, { status: 200 });
             } catch {
@@ -76,7 +87,7 @@ export async function POST(request: NextRequest) {
                 type: 'JWE',
                 payload: decrypted.plaintext,
                 signatureValid: { verified: true },
-                usedKey: outerUsedKey,
+                usedKey: sanitizeKey(outerUsedKey),
             },
             { status: 200 }
         );
@@ -97,7 +108,7 @@ export async function POST(request: NextRequest) {
                 type: 'JWT',
                 payload: decoded.payload,
                 signatureValid: decoded.signatureCheck,
-                usedKey: decoded.header.kid ? await getKeyById(decoded.header.kid) : null
+                usedKey: sanitizeKey(decoded.header.kid ? await getKeyById(decoded.header.kid) : null)
             },
             { status: 200 }
         );

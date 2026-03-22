@@ -101,7 +101,7 @@ function highlightJwt(
     }
 
     const parts = value.split(".");
-    const labels = ["Header (Algorithm, Typ)", "Payload (Claims)", "Signature (Prüfung)", "Segment 4", "Segment 5"];
+    const labels = ["Header (Algorithm, Typ)", "Payload (Claims)", "Signature", "Ciphertext", "Authentication Tag"];
 
     return parts.map((part, index) => {
         const colorClasses = ["text-red-600 dark:text-red-400", "text-yellow-600 dark:text-yellow-400", "text-green-600 dark:text-green-400", "text-blue-600 dark:text-blue-400", "text-black dark:text-white"];

@@ -159,16 +159,12 @@ export default function TextAreaWrapper({
                 </div>
             </div>
 
+            {(showDescription && description) && (
+                <p className="text-sm text-muted-foreground">{description}</p>
+            )}
+
             {/* Hauptinhalt */}
             {children}
-
-            {(showDescription && description) && (
-                <div
-                    className="mt-2 text-sm flex gap-2 items-center bg-yellow-500/10 px-4 py-2 border border-yellow-300 rounded-lg w-full">
-                    <img src="/lightbulb.png" alt="Lightbulb icon" className="w-6"/>
-                    <div>{description }</div>
-                </div>
-            )}
         </div>
     );
 }

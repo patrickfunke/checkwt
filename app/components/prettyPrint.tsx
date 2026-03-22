@@ -9,12 +9,15 @@ const keyDescriptions: Record<string, string> = {
     exp: 'Expiration Time: Identifies the expiration time on or after which the JWT must not be accepted',
     nbf: 'Not Before: Identifies the time before which the JWT must not be accepted',
     iat: 'Issued At: Identifies the time at which the JWT was issued',
-    jti: 'JWT ID: Unique identifier for the JWT',
-    alg: 'Algorithm: The algorithm used to sign or encrypt the JWT',
-    typ: 'Type: The type of the token, typically "JWT"',
-    enc: 'Encryption Algorithm: The algorithm used to encrypt the JWT (for JWE)',
-    kid: 'Key ID: A hint indicating which key was used to secure the JWT',
-    // Add more as needed
+    jti: 'JWT ID: Unique identifier for this token',
+    alg: 'Algorithm: Algorithm used for signing or key encryption',
+    typ: 'Type: Type of the token, typically "JWT"',
+    enc: 'Encryption: Algorithm used for payload encryption',
+    kid: 'Key ID: Identifier to reference the secret or key pair used',
+    tty: 'Token Type: Internal type of token',
+    scope: 'Scope: Scopes or permissions granted to the token',
+    kty: 'Key Type: Identifies the cryptographic algorithm family used with the key',
+    use: 'Public Key Use: Intended use of the public key, like "sig" for signing, "enc" for encryption, or "wrap" for key wrapping',
 };
 
 function renderValue(value: any, indent = 0): React.ReactNode {
