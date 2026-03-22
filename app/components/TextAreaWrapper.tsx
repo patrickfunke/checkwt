@@ -78,7 +78,7 @@ export default function TextAreaWrapper({
     };
 
     return (
-        <div className="flex flex-col gap-2 overflow-scroll">
+        <div className="flex flex-col gap-2">
             {/* Header mit Titel + Buttons */}
             <div className="flex justify-between items-center font-bold">
                 <div className="flex gap-2 items-center">

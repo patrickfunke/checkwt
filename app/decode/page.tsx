@@ -142,7 +142,7 @@ export default function Home() {
                 </div>
                 <div className="text-red-500">{errorMessage ?? ''}</div>
             </div>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="flex flex-col gap-4">
                 <div>
                     <div className="text-xl font-bold flex justify-between items-center">
                             <div className="flex gap-2">
@@ -187,7 +187,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="lg:col-start-2">
+                <div>
                     <div className="text-xl font-bold flex justify-between items-center">
                         <div>Decoded Payload</div>
                         <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(token)}>
@@ -198,7 +198,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="lg:col-start-2">
+                <div>
                     <div className="text-xl font-bold flex justify-between items-center">
                         <div>Used Keys</div>
                         <Button className="cursor-pointer" title="Copy" onClick={() => copyTextToClipboard(token)}>

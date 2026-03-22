@@ -72,98 +72,86 @@ export default function DecoderForm() {
             <div className="opacity-60 text-sm mb-2">
                 Paste a JWT below that you'd like to decode, validate, and verify.
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <TextAreaWrapper
-                        title="JSON Web Token"
-                        messages={[
-                            ...(errorMessage ? [{ type: "error" as const, message: errorMessage }] : []),
-                            ...(tokenType !== 'JWE' && signatureValid === true ? [{
-                                type: "success" as const,
-                                message: `Signature is valid`,
-                                icon: `/correct.png`
-                            }] : []),
-                            ...(tokenType !== 'JWE' && signatureValid === false ? [{
-                                type: "error" as const,
-                                message: `Signature is invalid`,
-                                icon: `/wrong.png`
-                            }] : []),
-                            ...(tokenType ? [{ type: "info" as const, message: `Detected: ${tokenType}` }] : []),
-                        ]}
-                        showDescription={false}
-                        onClear={() => {
-                            clearState();
-                            setToken("");
-                            setValue("");
-                            if (jwtRef.current) {
-                                jwtRef.current.focus();
+            <div className="flex flex-col gap-4">
+                <TextAreaWrapper
+                    title="JSON Web Token"
+                    messages={[
+                        ...(errorMessage ? [{ type: "error" as const, message: errorMessage }] : []),
+                        ...(tokenType !== 'JWE' && signatureValid === true ? [{
+                            type: "success" as const,
+                            message: `Signature is valid`,
+                            icon: `/correct.png`
+                        }] : []),
+                        ...(tokenType !== 'JWE' && signatureValid === false ? [{
+                            type: "error" as const,
+                            message: `Signature is invalid`,
+                            icon: `/wrong.png`
+                        }] : []),
+                        ...(tokenType ? [{ type: "info" as const, message: `Detected: ${tokenType}` }] : []),
+                    ]}
+                    showDescription={false}
+                    onClear={() => {
+                        clearState();
+                        setToken("");
+                        setValue("");
+                        if (jwtRef.current) {
+                            jwtRef.current.focus();
+                        }
+                    }}
+                    formContentText={token}
+                >
+                    <JwtTextarea
+                        ref={jwtRef}
+                        onChange={(token) => setToken(token)}
+                        errorMessage={errorMessage}
+                        value={value}
+                        onValueChange={(val: string) => setValue(val)}
+                        showSegmentTooltips={signatureValid === undefined || signatureValid === true}
+                    />
+                </TextAreaWrapper>
+
+                <TextAreaWrapper
+                    title="Decoded Header"
+                    deleteEnabled={false}
+                    description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
+                    showDescription={header !== ""}
+                    formContentText={header}
+                >
+                    <div className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                        <PrettyPrint data={header} />
+                    </div>
+                </TextAreaWrapper>
+
+                <TextAreaWrapper
+                    title="Decoded Payload"
+                    deleteEnabled={false}
+                    description={`Contains the actual data (for example, user ID or permissions).`}
+                    showDescription={payload !== ""}
+                    formContentText={payload}
+                >
+                    <div className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                        <PrettyPrint data={(() => {
+                            try {
+                                return JSON.parse(payload);
+                            } catch {
+                                return payload;
                             }
-                        }}
-                        formContentText={token}
-                    >
-                        <JwtTextarea
-                            ref={jwtRef}
-                            onChange={(token) => setToken(token)}
-                            errorMessage={errorMessage}
-                            value={value}
-                            onValueChange={(val: string) => setValue(val)}
-                            showSegmentTooltips={signatureValid === undefined || signatureValid === true}
-                        />
-                    </TextAreaWrapper>
-                </div>
+                        })()} />
+                    </div>
+                </TextAreaWrapper>
 
-
-                <div>
+                <div className="mb-20">
                     <TextAreaWrapper
-                        title="Decoded Header"
+                        title="Used Keys"
                         deleteEnabled={false}
-                        description={`Tells you what type of token and how it's signed (like the method used to protect it).`}
-                        showDescription={header !== ""}
-                        formContentText={header}
-
+                        description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
+                        showDescription={usedKey !== ""}
+                        formContentText={usedKey}
                     >
-                        <div
-                            className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
-                            <PrettyPrint data={header} />
+                        <div className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
+                            <PrettyPrint data={usedKey} />
                         </div>
                     </TextAreaWrapper>
-
-                    <div className="col-start-2">
-
-                        <TextAreaWrapper
-                            title="Decoded Payload"
-                            deleteEnabled={false}
-                            description={`Contains the actual data (for example, user ID or permissions).`}
-                            showDescription={payload !== ""}
-                            formContentText={payload}
-                        >
-                            <div
-                                className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
-                                <PrettyPrint data={(() => {
-                                    try {
-                                        return JSON.parse(payload);
-                                    } catch {
-                                        return payload;
-                                    }
-                                })()} />
-                            </div>
-                        </TextAreaWrapper>
-                    </div>
-
-                    <div className="col-start-2 mb-20">
-                        <TextAreaWrapper
-                            title="Used Keys"
-                            deleteEnabled={false}
-                            description={`A secret or private key is used to create a signature so you can verify the token hasn't been tampered with.`}
-                            showDescription={usedKey !== ""}
-                            formContentText={usedKey}
-                        >
-                            <div
-                                className="overflow-x-clip dark:bg-[#17181b] rounded-lg border border-gray-300 dark:border-[#1e1e1e] min-h-48 p-4">
-                                <PrettyPrint data={usedKey} />
-                            </div>
-                        </TextAreaWrapper>
-                    </div>
                 </div>
             </div>
         </>
